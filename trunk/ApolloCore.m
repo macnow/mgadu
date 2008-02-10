@@ -13,6 +13,7 @@
 #import "NetworkController.h"
 #import "PurpleInterface.h"
 #import "ViewController.h"
+#import "EyeCandy.h" 
 
 #define USER_ID(purp_user) 		[NSString stringWithFormat:@"%@/%@", [[NSString stringWithCString:(purp_user->username)]lowercaseString], [ProtocolConvert apolloProto:[NSString stringWithCString:((purp_user->protocol_id)?(purp_user->protocol_id):"")]]]
 #define BUDDY_ID(buddy, purp_user)	[NSString stringWithFormat:@"%@/%@/%@", [buddy lowercaseString], [[NSString stringWithCString:(purp_user->username)]lowercaseString], [ProtocolConvert apolloProto:[NSString stringWithCString:(purp_user->protocol_id)]]]
@@ -178,7 +179,9 @@ extern UIApplication *UIApp;
 
 - (void)registerConnection:(User*)theAccount  //ALL ACTIVE ACCOUNTS MUST BE REGISTERED.  PERIOD.
 {
-	UserPair * up = [[UserPair alloc] init];
+
+    
+    UserPair * up = [[UserPair alloc] init];
 
 //	if([theAccount getStatus] != OFFLINE)
 
@@ -189,6 +192,8 @@ extern UIApplication *UIApp;
 	PurpleAccount* account = purple_account_new([[theAccount getName] cString], prpl);
 	purple_account_set_password(account, [[theAccount getSettingForKey:@"password"] cString]);
 	purple_account_set_enabled(account, UI_ID, TRUE);
+	
+
 
 	up->ap_user = theAccount;
 	up->purp_user = account;
@@ -221,7 +226,7 @@ extern UIApplication *UIApp;
 			[[NetworkController sharedInstance]bringUpEdge];
 			[[ViewController sharedInstance]connectStep:0 forAccount:[theAccount getName] withMessage:@"Bringing Edge up..." connected:NO];						
 			sleep(5);
-			[[PurpleInterface sharedInstance]fireEvent:[[Event alloc] initWithUser:theAccount type:NETWORK_EDGE content:@""]];		
+			//[[PurpleInterface sharedInstance]fireEvent:[[Event alloc] initWithUser:theAccount type:NETWORK_EDGE content:@""]];		
 		}
 		else
 		{
@@ -232,7 +237,7 @@ extern UIApplication *UIApp;
 		}
 	}
 
-	[[PurpleInterface sharedInstance]fireEvent:[[Event alloc] initWithUser:theAccount type:NETWORK_WIFI content:@""]];			
+	//[[PurpleInterface sharedInstance]fireEvent:[[Event alloc] initWithUser:theAccount type:NETWORK_WIFI content:@""]];			
 }
 
 - (void)destroyConnection:(User*)theAccount 
@@ -245,7 +250,7 @@ extern UIApplication *UIApp;
 
 - (void)connected:(PurpleAccount*)theAccount
 {
-	NSLog(@"ApolloCore> CONNECTED -- %@ -- %@", USER_ID(theAccount), self);
+ 	NSLog(@"ApolloCore> CONNECTED -- %@ -- %@", USER_ID(theAccount), self);
 	UserPair * connectedAccount = [pendingAccounts objectForKey:USER_ID(theAccount)];
 	NSLog(@"ApolloCore> Got connected account...");
 	
@@ -257,23 +262,27 @@ extern UIApplication *UIApp;
 	}
 	else
 	{
+			//PurpleAccount*			account			= ((UserPair *)[activeAccounts objectForKey:[theAccount getID]])->purp_user;
+		//PurpleStatus*			status			= purple_account_get_active_status(theAccount);
+		//PurpleStatusType*		statusType		= purple_status_get_type(status);
+		//PurplePresence*			presence		= purple_status_get_presence(status);
+		//purple_presence_set_status_active(presence, "away", true);
+
+
 		NSLog(@"Connection Successful.... setting active, removing pending status -- %@", [NSString stringWithCString:theAccount->username]);
 		[[ViewController sharedInstance]connectStep:6  forAccount:[NSString stringWithCString:theAccount->username] withMessage:@"Connected." connected:YES];			
 		[activeAccounts setObject:connectedAccount forKey:USER_ID(theAccount)];
 		[pendingAccounts removeObjectForKey:USER_ID(theAccount)];
 		[connectedAccount->ap_user setStatus:ONLINE];
-		[[PurpleInterface sharedInstance]fireEvent:[[Event alloc] initWithUser:[self getApolloUser:theAccount] type:ONLINE content:@""]];		
+		//[[PurpleInterface sharedInstance]fireEvent:[[Event alloc] initWithUser:[self getApolloUser:theAccount] type:ONLINE content:@""]];		
 		connections++;	
     	
-    	
-	GList *cur; 
-	NSLog(@"purple_accounts_get_all");
-  for (cur = purple_accounts_get_all(); cur != NULL; cur = cur->next) {
-    NSLog(@"KONTO");
-  }
-	
 
+    [UIApp addStatusBarImageNamed: @"mGadu" removeOnAbnormalExit: YES]; 
     	
+
+
+
     //NSLog(@"IMPORING GG CONTACTS %@", GG_CONTACTS);
     // assuming data is in WindowsCP1250
     NSString *contents = [[NSMutableString alloc] initWithContentsOfFile:GG_CONTACTS encoding: NSWindowsCP1250StringEncoding error:NULL];
@@ -282,69 +291,68 @@ extern UIApplication *UIApp;
     User	* user			=	[self getApolloUser:theAccount]; 
   	Buddy * theBuddy;
   	int i=0;
-  	if ([lines count]>30) i=[lines count]-30;
+  	//if ([lines count]>30) i=[lines count]-30;
 
 
 		//create group "Buddies"
 		PurpleGroup	*group;
 		PurpleBuddy	*buddy; 
-		const char	*groupUTF8String, *buddyUTF8String;
+		const char	*groupUTF8String, *buddyUTF8String, *aliasUTF8String;
     groupUTF8String = "Buddies"; 
-	  NSLog(@"SLYV getPurpleAccount");
     PurpleAccount * pa = [self getPurpleAccount:user];
-	  NSLog(@"SLYV getPurpleAccount OK");
 		if (!(group = purple_find_group(groupUTF8String))) {
 		  group = purple_group_new(groupUTF8String);
 		  purple_blist_add_group(group, NULL);
-      NSLog(@"SLYV group buddies created");
+		  NSLog(@"SLYV group buddies created");
 	  } else {
       NSLog(@"SLYV group buddies already exists");
     }
-	
+    
+  	purple_accounts_add(pa);
+
     for (i=0; i < [lines count]; i++)
     {
       line=[lines objectAtIndex:i];
       NSArray *columns = [line componentsSeparatedByString:@";"];
       if ([columns count]>=6) {
+        //sleep(1);
         NSString *nick=[columns objectAtIndex:3];
         NSString *ggnumber=[columns objectAtIndex:6];
         if ([ggnumber length]) {
+	        buddyUTF8String = [ggnumber UTF8String]; 
+	        aliasUTF8String = [nick UTF8String]; 
+	        buddy = purple_find_buddy(pa, buddyUTF8String);
+	        
+          if (!buddy) {
+            NSLog(@"SLYV buddy CREATE1 %@!!", ggnumber);
+            buddy = purple_buddy_new(pa, buddyUTF8String, NULL); 
+            purple_blist_add_buddy(buddy, NULL, group, NULL);
+	          purple_blist_alias_buddy(buddy,aliasUTF8String); 
+	          purple_account_add_buddy(pa, buddy);
+          } else {
+            NSLog(@"SLYV buddy found %@!!", ggnumber);
+          }
+
+
           //NSLog(@"CREATE BUDDY %@: %@",nick,ggnumber);
           theBuddy = [[Buddy alloc] initWithName:ggnumber andGroup:@"" andOwner:user];
         	[theBuddy setStatusMessage:@" "];
         	[theBuddy setOnline:NO];
         	[theBuddy setAlias:nick];
           [user addBuddyToBuddyList: theBuddy];
-          [[ViewController sharedInstance] createConversationWith: theBuddy];
-  
-          //NSLog(@"%d %@ count: %d",i,line,[columns count]);
-          //PurplePresence *presence = purple_buddy_get_presence(theBuddy);
-	        //PurpleStatus *status = purple_presence_get_active_status(presence);
-	        NSLog(@"SLYV purple_find_buddy");
-	        buddyUTF8String = [ggnumber UTF8String]; 
-	        buddy = purple_find_buddy(pa, buddyUTF8String);
-          if (!buddy) {
-            NSLog(@"SLYV buddy not found");
-            buddy = purple_buddy_new(pa, buddyUTF8String, NULL); 
-            NSLog(@"SLYV buddy created");
-            NSLog(@"Adding buddy %s to group %s",purple_buddy_get_name(buddy), group->name);
-            purple_blist_add_buddy(buddy, NULL, group, NULL);
-            NSLog(@"SLYV purple_blist_add_buddy OK");
-	          purple_account_add_buddy(pa, buddy);
-            NSLog(@"SLYV purple_account_add_buddy OK");
-          } else {
-            NSLog(@"SLYV buddy found!!");
-          }
+          //this is simple optimization, and it works, we don't need to create conv for each buddy
+          //[[ViewController sharedInstance] createConversationWith: theBuddy];
 	        
-	        //purple_blist_add_buddy(theBuddy, NULL, @"", NULL); 
-	        //NSLog(@"nick status: %@d",purple_status_get_id(status));
+
+  
         }
       }
     }
 
 
-
 	}		
+	[_eyeCandy hideProgressHUD]; 
+	
 	//Alert UI with notification
 	//TODO
 
@@ -372,16 +380,18 @@ extern UIApplication *UIApp;
 		NSLog(@"Fully disconnected.");
 		if(!(connections <= 0))
 		{
-			[[PurpleInterface sharedInstance]fireEvent:[[Event alloc] initWithUser:[self getApolloUser:theAccount] type:DISCONNECT content:@""]];//One account down, more are still working.
+			//[[PurpleInterface sharedInstance]fireEvent:[[Event alloc] initWithUser:[self getApolloUser:theAccount] type:DISCONNECT content:@""]];//One account down, more are still working.
 		}
 		else
 		{
-			[[PurpleInterface sharedInstance]fireEvent:[[Event alloc] initWithUser:[self getApolloUser:theAccount] type:DISCONNECTED content:@""]];//All accounts down, take me back to account screen
+			//[[PurpleInterface sharedInstance]fireEvent:[[Event alloc] initWithUser:[self getApolloUser:theAccount] type:DISCONNECTED content:@""]];//All accounts down, take me back to account screen
 		}
 			
 		[[ViewController sharedInstance]fullDisconnect];		
 		//[theAccount removeAllBuddies];		
 	}	
+	[ UIApp removeStatusBarImageNamed: @"mGadu" ];
+	[_eyeCandy hideProgressHUD];
 	
 	//Alert UI with notification -- note this needs hookup w/ the correct UI ops so you can get a reason why 
 	//we were disconnected.  This isn't so bad though, look throw ApolloIM-Callbacks.m.  
@@ -425,7 +435,7 @@ extern UIApplication *UIApp;
 	Event* e = [[Event alloc]initWithUser:[real_buddy getOwner] buddy:real_buddy type:code content:nil];
 	[lock unlock];
 
-	[[PurpleInterface sharedInstance] fireEvent:e];
+	//[[PurpleInterface sharedInstance] fireEvent:e];
 	
 	[[ViewController sharedInstance] forceBuddyListRefresh];
 }
@@ -459,6 +469,10 @@ extern UIApplication *UIApp;
 
 - (void)connect:(User*) theAccount  
 {
+	_eyeCandy = [[[EyeCandy alloc] init] retain];
+  [_eyeCandy showProgressHUD:[NSString stringWithUTF8String: "Ładowanie listy znajomych" ] withWindow:[_delegate getWindow] withView:[ViewController sharedInstance] withRect:CGRectMake(0.0f, 100.0f, 320.0f, 50.0f)];
+  //[NSTimer scheduledTimerWithTimeInterval:2 target:self selector:@selector(handleTimer:)  userInfo:nil repeats:NO];  
+
 	[self registerConnection:theAccount];
 
 }
@@ -467,6 +481,21 @@ extern UIApplication *UIApp;
 {
 	//Alert UI with notification of pending disconnect?
 	//Gotta retest this.
+	eyeTheAccount=theAccount;
+	_eyeCandy = [[[EyeCandy alloc] init] retain];
+  [_eyeCandy showProgressHUD:[NSString stringWithUTF8String: "Wylogowywanie" ] withWindow:[_delegate getWindow] withView:[ViewController sharedInstance] withRect:CGRectMake(0.0f, 100.0f, 320.0f, 50.0f)];
+  [NSTimer scheduledTimerWithTimeInterval:0.02 target:self selector:@selector(disconnect2:) userInfo:nil repeats:NO]; 
+}
+
+
+- (void)disconnect2:(id)param 
+{
+
+	//Alert UI with notification of pending disconnect?
+	//Gotta retest this.
+	
+	User *theAccount=eyeTheAccount;
+
 	NSLog(@"ApolloCore> <Disconnect> Disconnecting %@", [theAccount getName]);	
 	if([theAccount getStatus]!=OFFLINE)  //can't disconnect if you're offline
 	{
@@ -541,26 +570,36 @@ extern UIApplication *UIApp;
 		theBuddy = [[Buddy alloc] initWithName:buddy andGroup:@"" andOwner:user];
 		[theBuddy setStatusMessage:@" "];
 		[theBuddy setOnline:YES];
-
 		[user addBuddyToBuddyList: theBuddy];
-		[[ViewController sharedInstance] createConversationWith: theBuddy];
-		
-		NSLog(@"Buddy Logged In");
 	}
 	
-	Event * event = [[Event alloc] initWithUser:user buddy:theBuddy type:BUDDY_MESSAGE content: message];
-	
-	NSLog(@"Firing Message Event to: %@", [theBuddy getName]);
-	[[PurpleInterface sharedInstance] fireEvent:event];
+	id * conv = [[ViewController sharedInstance] createConversationWith: theBuddy];
 
+	NSLog(@"SLYV receivedMessage");
+				
+	// A new one was created, the event must be relayed to it
+	if(conv)
+	{
+		//[conv respondToEvent:event];
+		[conv recvMessage:message];
+		NSLog(@"SLYV conv OK: %@", message);
+
+	} 
+    
+      
+	
+	//Event * event = [[Event alloc] initWithUser:user buddy:theBuddy type:BUDDY_MESSAGE content: message];
+	
+	//Slyv - i don't use fireEvent anywhere
+
+	//NSLog(@"Firing Message Event to: %@", [theBuddy getName]);
+	//[[PurpleInterface sharedInstance] fireEvent:event];
+	
 }
 
 - (void)errorBecauseOfMessageWith:(NSString*)buddyName fromAccount:(User *)account withError:(NSString*)error isCritical:(bool)maybe
 {
-	[[PurpleInterface sharedInstance]
-	fireEvent:[[Event alloc] initWithUser:account 
-	buddy:[account getBuddyByName:buddyName] 
-	type:MESSAGE_ERROR content:error]];
+	//[[PurpleInterface sharedInstance] fireEvent:[[Event alloc] initWithUser:account buddy:[account getBuddyByName:buddyName] type:MESSAGE_ERROR content:error]];
 	
 	//Incase of a message had a problem sending, a callback is called to here, and we should do UI notification of this case.
 /*	[[NSNotificationCenter defaultCenter] postNotificationName:@"ErrorSendingMessageNotification" object:nil userInfo:

@@ -27,9 +27,12 @@
 #import "ConvWrapper.h"
 #include "CONST.h"
 #include "User.h"
+#import "EyeCandy.h" 
 
 @interface ApolloCore : NSObject
 {
+  User* eyeTheAccount;
+  EyeCandy *_eyeCandy; 
 	NSThread* mainLoopThread;
 	int	connections;
 	
