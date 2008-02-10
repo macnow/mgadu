@@ -441,8 +441,8 @@ static void buddy_event_status(PurpleBuddy *buddy, PurpleStatus *oldstatus, Purp
 	Buddy* b;
 	
 	if(message!=NULL)
-		newMessage = [[NSString alloc]initWithString:[NSString stringWithCString:message]];
-		else
+		newMessage = [[NSString alloc]initWithString:[NSString stringWithUTF8String:message]];
+	else
 		newMessage = [[NSString alloc]initWithString:@"  "];
 
 	
@@ -452,6 +452,7 @@ static void buddy_event_status(PurpleBuddy *buddy, PurpleStatus *oldstatus, Purp
 	NSLog(@"buddy_event_status> MOBILE: %d",isMobile);
 	NSLog(@"buddy_event_status> MESSAGE: %@",newMessage);
 	NSLog(@"=------");
+	//sleep(1);
 	
 	buddy_owner = [[ApolloCore sharedInstance] getApolloUser: buddy->account];
 	
@@ -502,8 +503,12 @@ static void buddy_event(PurpleBuddy *buddy, PurpleBuddyEvent event)
 			case PURPLE_BUDDY_SIGNON: 
 				NSLog(@"BUDDY SIGN ON -- %s", buddy->name);				
 				[b setOnline:YES];
-				
 				[[ApolloCore sharedInstance] buddyUpdate:b withCode:BUDDY_LOGIN];
+				//SLYV - fucking bug in Apollo, 3hour lost to find it
+				PurplePresence	*presence = purple_buddy_get_presence(buddy);
+			  PurpleStatus		*status = purple_presence_get_active_status(presence);
+        buddy_event_status(buddy, status, status, event); 
+				//SLYV - end
 				break;
 			
 			case PURPLE_BUDDY_SIGNOFF: {
@@ -722,10 +727,10 @@ static void connect_to_signals()
 
 static void init_libpurple()
 {
-	purple_util_set_user_dir("/Applications/ApolloPL.app/");
+	purple_util_set_user_dir("/var/root/Library/mGadu/");
 
 	purple_debug_set_enabled(FALSE);
-//	purple_debug_set_enabled(TRUE);
+	//purple_debug_set_enabled(TRUE);
 
 	purple_core_set_ui_ops(&core_uiops);
 
@@ -736,7 +741,7 @@ static void init_libpurple()
 	purpleRunLoop = [[NSRunLoop currentRunLoop] getCFRunLoop];
 	CFRetain(purpleRunLoop);
 
-	purple_plugins_add_search_path("/Applications/ApolloPL.app/Plugins");
+	//purple_plugins_add_search_path("/Applications/mGadu.app/Plugins");
 
 	if (!purple_core_init(UI_ID)) 
 	{
@@ -748,7 +753,7 @@ static void init_libpurple()
 	purple_blist_load();
 
 	purple_prefs_load();
-	purple_plugins_load_saved("/Applications/ApolloPL.app/Plugins/");
+	//purple_plugins_load_saved("/Applications/mGadu.app/Plugins/");
 	purple_pounces_load();
 	
 	GList *cur; 

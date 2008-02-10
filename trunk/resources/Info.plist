@@ -5,15 +5,15 @@
 	<key>CFBundleDevelopmentRegion</key>
 	<string>pl</string>
 	<key>CFBundleExecutable</key>
-	<string>Apollo</string>
+	<string>mGadu</string>
 	<key>CFBundleIdentifier</key>
-	<string>com.google.code.apolloim.pl</string>	
+	<string>com.google.code.mgadu.pl</string>	
 	<key>CFBundleInfoDictionaryVersion</key>
 	<string>0.2</string>
 	<key>CFBundleName</key>
-	<string>ApolloPL</string>
+	<string>mGadu</string>
 	<key>CFBundlePackageType</key>
-	<string>APPL</string>
+	<string>MGG</string>
 	<key>CFBundleShortVersionString</key>
 	<string>1.0.0</string>
 	<key>CFBundleSignature</key>
@@ -21,6 +21,6 @@
 	<key>CFBundleVersion</key>
 	<string>1.0</string>
 	<key>NSPrincipalClass</key>
-	<string>ApolloPLApp</string>
+	<string>mGaduApp</string>
 </dict>
 </plist>

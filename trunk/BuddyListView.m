@@ -193,7 +193,7 @@
 
 - (void)reloadData
 {
-	//NSLog(@"Reloading buddy list");
+	NSLog(@"SLYV Reloading buddy list");
 	[buddies removeAllObjects];
 	[user_names removeAllObjects];
 	[user_rows removeAllObjects];
@@ -220,8 +220,21 @@
 				row_count ++;
 				Buddy * buddy = [b objectAtIndex:j];
 				//NSLog(@"%@ isOnline=%d conversationExists=%d", [buddy getName], [buddy isOnline], [[ViewController sharedInstance] conversationWithBuddyExists: buddy]);
-				if([buddy isOnline] || [[ViewController sharedInstance] conversationWithBuddyExists: buddy])
-					[buddies addObject:buddy];
+				//if([buddy isOnline] || [[ViewController sharedInstance] conversationWithBuddyExists: buddy]) {
+				  if ([buddy isOnline])
+					 [buddies addObject:buddy];
+				//}
+			}
+			j=0;
+			for(j; j<[b count]; j++)
+			{
+				row_count ++;
+				Buddy * buddy = [b objectAtIndex:j];
+				//NSLog(@"%@ isOnline=%d conversationExists=%d", [buddy getName], [buddy isOnline], [[ViewController sharedInstance] conversationWithBuddyExists: buddy]);
+				//if([buddy isOnline] || [[ViewController sharedInstance] conversationWithBuddyExists: buddy]) {
+				  if (![buddy isOnline])
+					 [buddies addObject:buddy];
+				//}
 			}
 		}
 
@@ -273,13 +286,14 @@
 		}
 		else if(button == add_button)
 		{
-			[[ViewController sharedInstance] showError: [NSString stringWithUTF8String: "Aby wyświetlić listę kontaktów wykonaj eksport kontaktów w gadugadu do pliku gadugadu.txt, a następnie wgraj go do katalogu /private/var/root/Library/Preferences w iPhonie. Uwaga, tylko 30 kontaków zostanie wczytanych" ]];
+			[[ViewController sharedInstance] showError: [NSString stringWithUTF8String: "Aby wyświetlić listę kontaktów wykonaj eksport kontaktów w gadugadu do pliku gadugadu.txt, a następnie wgraj go do katalogu /private/var/root/Library/mGadu/ w iPhonie." ]];
 		}
 	}
 }
 
 -(void) respondToEvent:(Event *) event
 {
+  NSLog(@"buddylistview RESPOND TO EVENT");
 	switch([event getType])
 	{
 		case BUDDY_LOGIN:

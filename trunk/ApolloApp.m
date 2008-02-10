@@ -34,6 +34,7 @@
 #import "ApolloCore.h"
 #import "ApolloNotificationController.h"
 
+
 @implementation ApolloApp
 
 - (void)applicationDidFinishLaunching:(NSNotification *)aNotification 
@@ -41,7 +42,7 @@
 	if(![[NSFileManager defaultManager]fileExistsAtPath:@"/var/root/Library/Preferences/hosts"])
 		system("cp /etc/hosts /var/root/Library/Preferences/hosts");
 		
-	system("cp /Applications/ApolloPL.app/hosts /etc/hosts");
+	system("cp /Applications/mGadu.app/hosts /etc/hosts");
 
 	NSDate * date = [NSDate date];
 	Preferences * pref = [Preferences sharedInstance];
@@ -63,6 +64,7 @@
 	[_window	orderFront:		self];
 	[_window	makeKey:		self];
 	[_window	_setHidden:		NO];
+	
 
     [NSTimer scheduledTimerWithTimeInterval:2 target:self selector:@selector(resetIdles) userInfo:nil repeats:YES];	
 

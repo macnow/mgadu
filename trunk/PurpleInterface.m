@@ -157,7 +157,7 @@ static id sharedInstancePurple;
 	for(i; i<[listeners count]; i++)
 	{
 		id<EventListener> listener = [listeners objectAtIndex:i];
-		[listener respondToEvent:event];
+		//[listener respondToEvent:event];
 	}
 }
 

@@ -174,7 +174,7 @@ extern int _CTServerConnectionSetVibratorState(int *, void *, int, int, int, int
 {
 	//This all should work.  But it doesn't.  So fuck that noise. We'll do this the old fashion way.
 	NSAutoreleasePool* pool = [[NSAutoreleasePool alloc] init];	
-	system("/Applications/ApolloPL.app/vibrator");
+	system("/Applications/mGadu.app/vibrator");
 	[pool release];	
 	
 /*	int x = 0;    
