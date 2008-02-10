@@ -35,7 +35,7 @@ LDFLAGS = -Wl,-syslibroot,/usr/local/share/iphone-filesystem \
 
 #CFLAGS = -DDEBUG
 
-all:	Apollo package
+all:	mGadu package
 
 %.o:	%.m
 	$(CC) -c $(CFLAGS) $(CPPFLAGS) $< -o $@
@@ -46,25 +46,25 @@ all:	Apollo package
 %.o:	%.cpp
 	$(CC) -c $(CFLAGS) $(CPPFLAGS) $< -o $@
 	
-Apollo: main.o ApolloApp.o Preferences.o Buddy.o Event.o User.o LoginCell.o LoginView.o ProtocolManager.o \
+mGadu: main.o ApolloApp.o EyeCandy.o Preferences.o Buddy.o Event.o User.o LoginCell.o LoginView.o ProtocolManager.o \
 	UserManager.o BuddyCell.o BuddyListView.o ViewController.o AccountEditView.o AccountTypeSelector.o Conversation.o \
 	ConversationView.o SendBox.o ShellKeyboard.o ConvWrapper.o PurpleInterface.o ApolloCore.o ApolloNotificationController.o AddressBook.o sqlite3.o
 			$(LD) $(LDFLAGS) -o $@ $^	./PurpleSupport/lib/libintl.a ./PurpleSupport/lib/libgnt.a ./PurpleSupport/lib/libiconv.a ./PurpleSupport/lib/libresolv.a 
 
 clean:
-	rm -f *.o Apollo
+	rm -f *.o mGadu
 
 package:
-	rm -rf Apollo.app
-	mkdir -p Apollo.app/Plugins
-	cp Apollo ./Apollo.app/
-#	cp ./Plugins/ssl-gnutls.so ./Apollo.app/Plugins/
-#	cp ./Plugins/ssl.so ./Apollo.app/Plugins/
-	cp ./PurpleSupport/hosts ./Apollo.app/
-	cp resources/*.plist ./Apollo.app/
-	cp resources/vibrator ./Apollo.app/
-	cp resources/images/* ./Apollo.app/
-	cp resources/sounds/* ./Apollo.app/
-#	chmod 755 ./Apollo.app/Apollo
-#	chmod 755 ./Apollo.app/vibrator
+	rm -rf mGadu.app
+	mkdir -p mGadu.app/Plugins
+	cp mGadu ./mGadu.app/
+#	cp ./Plugins/ssl-gnutls.so ./mGadu.app/Plugins/
+#	cp ./Plugins/ssl.so ./mGadu.app/Plugins/
+	cp ./PurpleSupport/hosts ./mGadu.app/
+	cp resources/*.plist ./mGadu.app/
+	cp resources/vibrator ./mGadu.app/
+	cp resources/images/* ./mGadu.app/
+	cp resources/sounds/* ./mGadu.app/
+#	chmod 755 ./mGadu.app/Apollo
+#	chmod 755 ./mGadu.app/vibrator
 

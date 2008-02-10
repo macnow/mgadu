@@ -196,8 +196,10 @@
 
 -(void) messageCountIncrease
 {
-	if(!is_conv_shown)
+	if(!is_conv_shown) {
 		unread_msg_count++;
+    NSLog(@"SLYV messageCountIncreased: %d", unread_msg_count);
+  }
 }
 
 -(void) clearMessageCount

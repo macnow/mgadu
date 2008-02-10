@@ -43,6 +43,7 @@
 		float transparent[4] = {0.0, 0.0, 0.0, 0.0};
 		float grey[4] = {0.71, 0.71, 0.71, 1.0};
 		float red[4] = {0.96, 0.35, 0.30, 1.0};
+		float green[4] = {0.36, 0.95, 0.30, 1.0};
 		float black[4] = {0.35, 0.35, 0.35, 1.0};
 		CGColorSpaceRef colorSpace = CGColorSpaceCreateDeviceRGB();
 		[self setBackgroundColor:CGColorCreate(colorSpace, white)];
@@ -53,17 +54,20 @@
 		status_onscreen = CGPointMake(10.0, 12.0);
 		status_offscreen = CGPointMake(17.0+320, 12.0);
 
-		user_with_message = CGPointMake(35.0, -7.0);
+		user_with_message = CGPointMake(35.0, -9.0);
 		user_no_message = CGPointMake(35.0, 1.0);
 
 		// Conversation Images
-		away_image_conv = [[UIImageView alloc] initWithFrame: CGRectMake(status_offscreen.x,
+		/*away_image_conv = [[UIImageView alloc] initWithFrame: CGRectMake(status_offscreen.x,
 								status_offscreen.y, 13, 13)];
 		[away_image_conv setImage:[UIImage applicationImageNamed: @"buddy_status_chat_away.png"]];
 		
+
 		idle_image_conv = [[UIImageView alloc] initWithFrame: CGRectMake(status_offscreen.x,
 								status_offscreen.y, 13, 13)];
 		[idle_image_conv setImage:[UIImage applicationImageNamed: @"buddy_status_chat_idle.png"]];
+		
+		
 		
 		active_image_conv = [[UIImageView alloc] initWithFrame: CGRectMake(status_onscreen.x,
 								status_offscreen.y, 15, 16)];
@@ -72,15 +76,17 @@
 		offline_image_conv = [[UIImageView alloc] initWithFrame: CGRectMake(status_onscreen.x,
 								status_offscreen.y, 13, 13)];
 		[offline_image_conv setImage:[UIImage applicationImageNamed: @"buddy_status_chat_offline.png"]];
+		*/
 		
 		// No conversastion Images
 		away_image = [[UIImageView alloc] initWithFrame: CGRectMake(status_offscreen.x,
 								status_offscreen.y, 13, 13)];
 		[away_image setImage:[UIImage applicationImageNamed: @"buddy_status_away.png"]];
 		
-		idle_image = [[UIImageView alloc] initWithFrame: CGRectMake(status_offscreen.x,
+		/*idle_image = [[UIImageView alloc] initWithFrame: CGRectMake(status_offscreen.x,
 								status_offscreen.y, 13, 13)];
 		[idle_image setImage:[UIImage applicationImageNamed: @"buddy_status_idle.png"]];
+		*/
 		
 		active_image = [[UIImageView alloc] initWithFrame: CGRectMake(status_onscreen.x,
 								status_offscreen.y, 15, 16)];
@@ -90,21 +96,24 @@
 								status_offscreen.y, 13, 13)];
 		[offline_image setImage:[UIImage applicationImageNamed: @"buddy_status_offline.png"]];
 
-		buddy_label = [[UITextLabel alloc] initWithFrame: CGRectMake(35.0f, 80.0f, 180.f, 35.0f)];
+		buddy_label = [[UITextLabel alloc] initWithFrame: CGRectMake(5.0f, 80.0f, 180.f, 35.0f)];
 		[buddy_label setText: [buddy getDisplayName]];
 		[buddy_label setFont: large_font];
 		[buddy_label setColor: CGColorCreate(colorSpace, black)];
 		[buddy_label setBackgroundColor: CGColorCreate(colorSpace, transparent)];
 
-		away_message_label = [[UITextLabel alloc] initWithFrame: CGRectMake(35.0f, 13.0f, 220.f, 30.0f)];
+		away_message_label = [[UITextLabel alloc] initWithFrame: CGRectMake(35.0f, 12.0f, 220.f, 30.0f)];
 		[away_message_label setText: @""];
 		[away_message_label setFont: small_font];
-		[away_message_label setBackgroundColor: CGColorCreate(colorSpace, transparent)];
+		[away_message_label setWrapsText: YES];
+		
 		[away_message_label setColor: CGColorCreate(colorSpace, grey)];
+		[away_message_label setBackgroundColor: CGColorCreate(colorSpace, transparent)];
 
 		message_count = [[UITextLabel alloc] initWithFrame:CGRectMake([buddy_label textSize].width+35.0+15, 
 						0, 70, 20)];
 		[message_count setText:@""];
+		//[message_count setText: [buddy getMessageCount]];
 		[message_count setFont:small_font];
 		[message_count setBackgroundColor: CGColorCreate(colorSpace, transparent)];
 		[message_count setColor: CGColorCreate(colorSpace, red)];
@@ -112,13 +121,13 @@
 		[self addSubview:buddy_label];
 		[self addSubview:away_message_label];
 		[self addSubview:active_image];
-		[self addSubview:idle_image];
+		//[self addSubview:idle_image];
 		[self addSubview:away_image];
 		[self addSubview:offline_image];
-		[self addSubview:active_image_conv];
-		[self addSubview:idle_image_conv];
-		[self addSubview:away_image_conv];
-		[self addSubview:offline_image_conv];
+		//[self addSubview:active_image_conv];
+		//[self addSubview:idle_image_conv];
+		//[self addSubview:away_image_conv];
+		//[self addSubview:offline_image_conv];
 		[self addSubview:message_count];
 
 //		NSLog(@"BuddyCell: Data Going to be Loaded");
@@ -127,7 +136,8 @@
 
 //		NSLog(@"BuddyCell: Data Reloaded");
 
-		[[[buddy getOwner] getProtocolInterface] addEventListener:self];
+//Slyv - we don't use event listeners/fire events
+//		[[[buddy getOwner] getProtocolInterface] addEventListener:self];
 
 //		NSLog(@"BuddyCell: initializing complete");
 	}
@@ -191,51 +201,83 @@
 	CGColorSpaceRef colorSpace = CGColorSpaceCreateDeviceRGB();
 
 	[buddy_label setText: [buddy getDisplayName]];
+	if ([buddy getMessageCount]!=0)
+	  [message_count setText:[[NSString alloc]initWithFormat:@"(%d)",[buddy getMessageCount]]];
+	else
+    [message_count setText: @""];
 	[buddy_label setColor: CGColorCreate(colorSpace, black)];
 
-	[away_image_conv setFrame: CGRectMake(status_offscreen.x,
+	/*[away_image_conv setFrame: CGRectMake(status_offscreen.x,
 				status_offscreen.y, 13, 13)];
 	[idle_image_conv setFrame: CGRectMake(status_offscreen.x,
 				status_offscreen.y, 13, 13)];
 	[active_image_conv setFrame: CGRectMake(status_offscreen.x,
 				status_offscreen.y, 13, 13)];
 	[offline_image_conv setFrame: CGRectMake(status_offscreen.x,
-				status_offscreen.y, 13, 13)];
+				status_offscreen.y, 13, 13)];*/
 	[away_image setFrame: CGRectMake(status_offscreen.x,
 				status_offscreen.y, 13, 13)];
-	[idle_image setFrame: CGRectMake(status_offscreen.x,
-				status_offscreen.y, 13, 13)];
+	/*[idle_image setFrame: CGRectMake(status_offscreen.x,
+				status_offscreen.y, 13, 13)];*/
 	[active_image setFrame: CGRectMake(status_offscreen.x,
 				status_offscreen.y, 13, 13)];
 	[offline_image setFrame: CGRectMake(status_offscreen.x,
 				status_offscreen.y, 13, 13)];
 		
 	
-	if([[ViewController sharedInstance] conversationWithBuddyExists:buddy])
-	{
+// slyv - no different icon between normal and conversation mode
 		if([buddy isAway])
 		{
-		  NSLog(@"SLYV isAway");
-			[away_image_conv setFrame: CGRectMake(status_onscreen.x,
+		  //NSLog(@"SLYV isAway2");
+			[away_image setFrame: CGRectMake(status_onscreen.x,
 					status_onscreen.y, 13, 13)];
 		}
 		else if([buddy isIdle])
 		{
-		  NSLog(@"SLYV isIdle");
-			[idle_image_conv setFrame: CGRectMake(status_onscreen.x,
+		  //NSLog(@"SLYV isIdle2");
+			/*[idle_image setFrame: CGRectMake(status_onscreen.x,
+					status_onscreen.y, 13, 13)];*/
+			[away_image setFrame: CGRectMake(status_onscreen.x,
 					status_onscreen.y, 13, 13)];
 		}
 		else if([buddy isOnline])
 		{
-		  NSLog(@"SLYV isOnline");
-			[active_image_conv setFrame: CGRectMake(status_onscreen.x,
+		  //NSLog(@"SLYV isOnline2");
+			[active_image setFrame: CGRectMake(status_onscreen.x,
 					status_onscreen.y, 13, 13)];
 		}
 		else
 		{
-		  NSLog(@"SLYV else");
-			[offline_image_conv setFrame: CGRectMake(status_onscreen.x,
+		  //NSLog(@"SLYV else2");
+			[offline_image setFrame: CGRectMake(status_onscreen.x,
 					status_onscreen.y, 13, 13)];
+			[buddy_label setColor: CGColorCreate(colorSpace, grey)];
+		}
+
+
+/*	if([[ViewController sharedInstance] conversationWithBuddyExists:buddy])
+	{
+		if([buddy isAway])
+		{
+		  //NSLog(@"SLYV isAway");
+			[away_image_conv setFrame: CGRectMake(status_onscreen.x,
+					status_onscreen.y, 13, 13)];
+		}
+		else if([buddy isIdle]) //slyv: no "idle" in gadugadu
+		{
+		  //NSLog(@"SLYV isIdle");
+			//[idle_image_conv setFrame: CGRectMake(status_onscreen.x, status_onscreen.y, 13, 13)];
+			[away_image_conv setFrame: CGRectMake(status_onscreen.x, status_onscreen.y, 13, 13)];
+		}
+		else if([buddy isOnline])
+		{
+		  //NSLog(@"SLYV isOnline");
+			[active_image_conv setFrame: CGRectMake(status_onscreen.x, status_onscreen.y, 13, 13)];
+		}
+		else
+		{
+		  //NSLog(@"SLYV else");
+			[offline_image_conv setFrame: CGRectMake(status_onscreen.x,	status_onscreen.y, 13, 13)];
 			[buddy_label setColor: CGColorCreate(colorSpace, grey)];
 		}
 	}
@@ -243,30 +285,31 @@
 	{
 		if([buddy isAway])
 		{
-		  NSLog(@"SLYV isAway2");
+		  //NSLog(@"SLYV isAway2");
 			[away_image setFrame: CGRectMake(status_onscreen.x,
 					status_onscreen.y, 13, 13)];
 		}
 		else if([buddy isIdle])
 		{
-		  NSLog(@"SLYV isIdle2");
-			[idle_image setFrame: CGRectMake(status_onscreen.x,
-					status_onscreen.y, 13, 13)];
+		  //NSLog(@"SLYV isIdle2");
+			//[idle_image setFrame: CGRectMake(status_onscreen.x, status_onscreen.y, 13, 13)];
+			[away_image setFrame: CGRectMake(status_onscreen.x, status_onscreen.y, 13, 13)];
 		}
 		else if([buddy isOnline])
 		{
-		  NSLog(@"SLYV isOnline2");
+		  //NSLog(@"SLYV isOnline2");
 			[active_image setFrame: CGRectMake(status_onscreen.x,
 					status_onscreen.y, 13, 13)];
 		}
 		else
 		{
-		  NSLog(@"SLYV else2");
+		  //NSLog(@"SLYV else2");
 			[offline_image setFrame: CGRectMake(status_onscreen.x,
 					status_onscreen.y, 13, 13)];
 			[buddy_label setColor: CGColorCreate(colorSpace, grey)];
 		}
 	}
+*/
 
 //	NSLog(@"Cell Updating Status Message: '%@'", [buddy getStatusMessage]);
 
@@ -274,7 +317,7 @@
 	{
 		[buddy_label setFrame: CGRectMake(user_with_message.x,
 						user_with_message.y, 
-						180.0f, 35.0f)];
+						220.0f, 35.0f)];
 		[message_count setFrame:CGRectMake(user_with_message.x+[buddy_label textSize].width+5,
 						user_with_message.y+10,
 						100.0f, 15.0f)];
@@ -297,7 +340,7 @@
 	{
 		[buddy_label setFrame: CGRectMake(user_no_message.x,
 						user_no_message.y, 
-						180.f, 35.0f)];
+						220.f, 35.0f)];
 		[message_count setFrame:CGRectMake(user_no_message.x+[buddy_label textSize].width+5,
 						user_no_message.y+10,
 						100.0f, 15.0f)];
@@ -314,7 +357,7 @@
 
 -(void) respondToEvent:(Event *) event
 {
-  NSLog(@"RESPOND TO EVENT");
+  //NSLog(@"RESPOND TO EVENT");
 	int i;
 	if(([event getType] == DISCONNECT) && ([[[event getOwner]getName]isEqualToString:[[buddy getOwner]getName]]))
 	//if(([event getType] == DISCONNECT) && ([event getOwner] == [buddy getOwner]))

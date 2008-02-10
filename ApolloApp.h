@@ -18,12 +18,13 @@
 #import <Foundation/Foundation.h>
 #import <UIKit/UIKit.h>
 #import <UIKit/UIAnimator.h>
+#include "EyeCandy.h"
 
 extern UIApplication *UIApp;
 
 @interface ApolloApp : UIApplication 
 {
-    UIWindow		*_window;
+  UIWindow		*_window;
 }
 - (void)resetIdles;
 - (void)applicationDidFinishLaunching:(NSNotification *)aNotification;

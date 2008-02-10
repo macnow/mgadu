@@ -222,8 +222,8 @@
 	  return [super respondsToSelector:aSelector];
 	}
 	
-	-(void)recvMessage:(NSString*)msg isStatusMessage:(BOOL)statusMessage
-	{
+	-(void)recvMessage:(NSString*)msg 
+  {
 		if(![buddy isConversationVisible])
 		{
 			if(!introShown)
@@ -231,19 +231,15 @@
 				[[ViewController sharedInstance] showNewMessageFrom:[buddy getDisplayName] withMessage:msg];
 				introShown=YES;
 			}
+ 			[buddy messageCountIncrease];
+ 			[[ViewController sharedInstance] forceBuddyListRefresh];
+
 			[[ApolloNotificationController sharedInstance]receiveUnreadMessages:1];		
 			[[ApolloNotificationController sharedInstance]playRecvIm];
 		}
 			
-		if(statusMessage)
-		{
-			[convoView addStatusMessage:msg fromUser:buddy];
-		}
-		else
-		{
-			is_empty = NO;
-			[convoView appendToConversation:msg fromUser:buddy];
-		}
+		is_empty = NO;
+		[convoView appendToConversation:msg fromUser:buddy];
 	}	
 	
 	- (void)sendMessage
@@ -285,7 +281,7 @@
 
 	-(void) respondToEvent:(Event *) event
 	{
-	 //NSLog(@"EVENT");
+	 NSLog(@"conversation RESPOND TO EVENT");
 	 //NSLog(@"EVENT: %@",[event getType]);
 		// Make sure its not a double event
 		// sometimes happens when they are initialized
@@ -297,14 +293,7 @@
 			if([event getContent]!=NULL 
 				&& [[[event getBuddy]getSafeName]isEqualToString:[buddy getSafeName]]
 				&& [[[event getOwner]getID]isEqualToString:[[buddy getOwner]getID]])
-				[self recvMessage:[event getContent] isStatusMessage:NO];
-		}
-
-		if([event getType] == BUDDY_STATUS)
-		{
-		  NSLog(@"BUDDY_STATUS");
-			//if([event getBuddy] == buddy)
-			//	[self recvMessage:[[event getOwner] getStatusMessage] isStatusMessage:YES];
+				[self recvMessage:[event getContent]];
 		}
 
 		event = last_event;
@@ -316,11 +305,12 @@
 	{
 		if((button == close_button) || (button == back_button && is_empty))
 		{
-			[[ViewController sharedInstance] closeConversationWith: buddy];
+			[[ViewController sharedInstance] closeConversationWith: buddy];  //SLYV it deleted buddy before i disabled fireEvents
 			[[ViewController sharedInstance] transitionToBuddyListView];
 		}
 		else if(button == back_button)
 		{
+			//[[ViewController sharedInstance] closeConversationWith: buddy];  //SLYV it deleted buddy before i disabled fireEvents
 			[[ViewController sharedInstance] transitionToBuddyListView];
 		}
 	}
