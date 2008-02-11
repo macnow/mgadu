@@ -6,8 +6,7 @@ CC =      arm-apple-darwin-gcc \
 		  -I./PurpleSupport/include/glib-2.0/gmodule \
 		  -I/usr/local/arm-apple-darwin/include
 LD = $(CC)
-LDFLAGS = -Wl,-syslibroot,/usr/local/share/iphone-filesystem \
-          -framework Message \
+LDFLAGS =      -framework Message \
           -framework CoreFoundation \
           -framework Foundation \
           -framework UIKit \
