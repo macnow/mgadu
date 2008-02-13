@@ -47,6 +47,7 @@ int buddy_compare(id left, id right, void * context)
 		starting_name = [aname copy];
 		protocol = [aprotocol copy];
 		away = NO;
+		invisible = NO;
 		active = NO;
 		buddy_list = [[NSMutableArray alloc] init];
 
@@ -99,6 +100,20 @@ int buddy_compare(id left, id right, void * context)
 	if([self isActive])
 		[protocol_interface performUserUpdate:self];
 }
+
+-(BOOL) isInvisible
+{
+	return invisible;
+}
+
+-(void) setInvisible:(BOOL) is_invisible
+{
+	invisible = is_invisible;
+	if([self isActive])
+		[protocol_interface performUserUpdate:self];
+}
+
+
 
 // Setters
 -(void) setStatusMessage:(NSString *) astatus
