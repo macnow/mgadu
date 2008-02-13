@@ -177,10 +177,10 @@ extern UIApplication *UIApp;
 	return connections;
 }
 
-- (void)registerConnection:(User*)theAccount  //ALL ACTIVE ACCOUNTS MUST BE REGISTERED.  PERIOD.
+- (void)registerConnection:(id)param  //ALL ACTIVE ACCOUNTS MUST BE REGISTERED.  PERIOD.
 {
 
-    
+    User *theAccount=eyeTheAccount;
     UserPair * up = [[UserPair alloc] init];
 
 //	if([theAccount getStatus] != OFFLINE)
@@ -204,6 +204,7 @@ extern UIApplication *UIApp;
 		[theAccount getStatus] !=OFFLINE)
 	{
 		NSLog(@"ApolloCore> Why would we try to connect an already connected account?");
+	  [_eyeCandy hideProgressHUD];
 		return;
 	}
 	else
@@ -225,7 +226,7 @@ extern UIApplication *UIApp;
 			[[NetworkController sharedInstance]keepEdgeUp];									
 			[[NetworkController sharedInstance]bringUpEdge];
 			[[ViewController sharedInstance]connectStep:0 forAccount:[theAccount getName] withMessage:@"Bringing Edge up..." connected:NO];						
-			sleep(5);
+			sleep(10);
 			//[[PurpleInterface sharedInstance]fireEvent:[[Event alloc] initWithUser:theAccount type:NETWORK_EDGE content:@""]];		
 		}
 		else
@@ -236,6 +237,7 @@ extern UIApplication *UIApp;
 			[self disconnect:theAccount];
 		}
 	}
+	
 
 	//[[PurpleInterface sharedInstance]fireEvent:[[Event alloc] initWithUser:theAccount type:NETWORK_WIFI content:@""]];			
 }
@@ -250,6 +252,22 @@ extern UIApplication *UIApp;
 
 - (void)connected:(PurpleAccount*)theAccount
 {
+	//Alert UI with notification of pending disconnect?
+	//Gotta retest this.
+	eyeThePurpleAccount=theAccount;
+  [_eyeCandy hideProgressHUD];
+  _eyeCandy = [[[EyeCandy alloc] init] retain]; 
+  [_eyeCandy showProgressHUD:[NSString stringWithUTF8String: "Ładowanie listy znajomych" ] withWindow:[_delegate getWindow] withView:[ViewController sharedInstance] withRect:CGRectMake(0.0f, 100.0f, 320.0f, 50.0f)];
+  [NSTimer scheduledTimerWithTimeInterval:0.02 target:self selector:@selector(connected2:) userInfo:nil repeats:NO]; 
+}
+
+
+  
+  
+- (void)connected2:(id)param 
+{
+  PurpleAccount *theAccount=eyeThePurpleAccount;
+
  	NSLog(@"ApolloCore> CONNECTED -- %@ -- %@", USER_ID(theAccount), self);
 	UserPair * connectedAccount = [pendingAccounts objectForKey:USER_ID(theAccount)];
 	NSLog(@"ApolloCore> Got connected account...");
@@ -278,9 +296,7 @@ extern UIApplication *UIApp;
 		connections++;	
     	
 
-    [UIApp addStatusBarImageNamed: @"mGadu" removeOnAbnormalExit: YES]; 
-    	
-
+    [UIApp addStatusBarImageNamed: @"mGadu" removeOnAbnormalExit: YES];
 
 
     //NSLog(@"IMPORING GG CONTACTS %@", GG_CONTACTS);
@@ -470,10 +486,12 @@ extern UIApplication *UIApp;
 - (void)connect:(User*) theAccount  
 {
 	_eyeCandy = [[[EyeCandy alloc] init] retain];
-  [_eyeCandy showProgressHUD:[NSString stringWithUTF8String: "Ładowanie listy znajomych" ] withWindow:[_delegate getWindow] withView:[ViewController sharedInstance] withRect:CGRectMake(0.0f, 100.0f, 320.0f, 50.0f)];
-  //[NSTimer scheduledTimerWithTimeInterval:2 target:self selector:@selector(handleTimer:)  userInfo:nil repeats:NO];  
+  [_eyeCandy showProgressHUD:[NSString stringWithUTF8String: "Łączenie..." ] withWindow:[_delegate getWindow] withView:[ViewController sharedInstance] withRect:CGRectMake(0.0f, 100.0f, 320.0f, 50.0f)];
+  //[NSTimer scheduledTimerWithTimeInterval:2 target:self selector:@selector(handleTimer:)  userInfo:nil repeats:NO];
+  eyeTheAccount=theAccount;  
+  [NSTimer scheduledTimerWithTimeInterval:0.02 target:self selector:@selector(registerConnection:) userInfo:nil repeats:NO]; 
 
-	[self registerConnection:theAccount];
+	//[self registerConnection:theAccount];
 
 }
 
@@ -513,6 +531,19 @@ extern UIApplication *UIApp;
 	
 			[theAccount removeAllBuddies];
 		}
+	}
+}
+
+- (void)invisible:(User*) theAccount
+{
+//	if([theAccount getStatus]==ONLINE)
+	{
+		PurpleAccount*			account			= ((UserPair *)[activeAccounts objectForKey:[theAccount getID]])->purp_user;
+		PurpleStatus*			status			= purple_account_get_active_status(account);
+		PurpleStatusType*		statusType		= purple_status_get_type(status);
+		PurplePresence*			presence		= purple_status_get_presence(status);
+	
+		purple_presence_set_status_active(presence, "invisible", true);
 	}
 }
 
@@ -673,11 +704,28 @@ extern UIApplication *UIApp;
 
 - (void) goTeamCancer
 {
-	if(connections <= 0)
+	NSLog(@"goTeamCancer");
+	if(connections <= 0) {
+  	NSLog(@"transitionToLoginView");
 		[[ViewController sharedInstance]transitionToLoginView];
-		else
+	}
+	else
 		NSLog(@"TOO MANy CONNECTIONS TO RESET: %d", connections);
 	
+}
+
+- (void) hideHUD
+{
+	[_eyeCandy hideProgressHUD];
+}
+
+- (void) connectionBroken
+{
+	[[ApolloCore sharedInstance] hideHUD];
+  [ UIApp removeStatusBarImageNamed: @"mGadu" ];
+  NSLog(@"connectionBroken, restart Springboard");
+  system([[NSString stringWithFormat:@"ps -auxw | grep SpringBoard |grep -v grep | cut -c 5-12 | xargs kill -HUP"] UTF8String]);
+
 }
 
 @end

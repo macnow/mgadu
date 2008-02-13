@@ -668,10 +668,16 @@ static void apolloConnReportDisconnect(PurpleConnection *gc, const char *text)
 {
 	alexLog([NSString stringWithFormat:@"apolloConnReportDisconnect> Connection Disconnected: gc=%x (%s)", gc, text]);
 	NSLog(@"apolloConnReportDisconnect> Connection Disconnected: gc=%x (%s)", gc, text);
-	[[ApolloCore sharedInstance]	connectionStatus:	-1 
+	//[[ApolloCore sharedInstance] disconnected:purple_connection_get_account(gc)];
+  //[[ApolloCore sharedInstance] registerConnection];
+  [[ApolloCore sharedInstance] connectionBroken];
+  
+
+  
+	/*[[ApolloCore sharedInstance]	connectionStatus:	-1 
 									withMessage:		[NSString stringWithCString:text] 
 									forAccount:			purple_connection_get_account(gc)
-	];
+	];*/
 }
 
 static PurpleConnectionUiOps apollo_conn_uiops = {

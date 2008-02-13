@@ -230,6 +230,7 @@ static id sharedInstanceViewControl;
 
 -(void) connectionFailureFor:(NSString*)account withMessage:(NSString*)message isDisconnect:(bool)maybe
 {
+  	[[ApolloCore sharedInstance] hideHUD];
 		[connectSheet dismiss];
 		UIAlertSheet* sheet = [[UIAlertSheet alloc]initWithTitle:[[NSString alloc]initWithFormat:@"%@",account] buttons:nil defaultButtonIndex:1 delegate:self context:nil];	
 		[sheet setBodyText:[NSString stringWithString:message]];
@@ -238,6 +239,8 @@ static id sharedInstanceViewControl;
 //		[sheet performSelector:@selector(popupAlertAnimated:) withObject:YES afterDelay:0.4];		
 		[sheet popupAlertAnimated: YES];
 //		[account setActive:NO];
+
+
 		[[ApolloCore sharedInstance] reset];
 		
 		//TODO

@@ -44,6 +44,7 @@
 	NSMutableArray * user_rows;
 
 	BOOL is_away;
+	BOOL is_invisible;
 	int user_count;
 
 	BOOL needs_refreshing;

@@ -136,7 +136,9 @@ static id sharedInstancePurple;
 	NSLog(@"Updating User: %@ Is Away: %i Message:%@", [auser getName], [auser isAway], [auser getStatusMessage]);
 	if([auser isAway])
 		[[ApolloCore sharedInstance]away:auser];
-	else
+	else if([auser isInvisible])
+		[[ApolloCore sharedInstance]invisible:auser];
+  else
 		[[ApolloCore sharedInstance]back:auser];
 }
 

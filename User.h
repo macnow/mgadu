@@ -34,6 +34,7 @@
 	NSString * status_message;
 	NSString * profile;
 	BOOL away;
+	BOOL invisible;
 	BOOL active;
 	
 //	ConnectionStatus status;

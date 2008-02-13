@@ -50,6 +50,7 @@
 	if ((self == [super initWithFrame: aframe]) != nil) 
 	{
 		is_away = NO;
+		is_invisible = NO;
 		user_count = 0;
 
 		frame = CGRectMake(aframe.origin.x, aframe.origin.y, aframe.size.width, aframe.size.height);
@@ -266,7 +267,7 @@
                                         forState: 1];
 				is_away = NO;
 			}
-			else
+			else if(is_invisible)
 			{
 				[status_button setImage:[UIImage 
 					applicationImageNamed: @"buddy_awaybutton_up.png"]
@@ -275,13 +276,25 @@
 					applicationImageNamed: @"buddy_awaybutton_down.png"]
                                         forState: 1];
 				is_away = YES;
+				is_invisible = NO;
 			}
-			
+			else
+			{
+				[status_button setImage:[UIImage 
+					applicationImageNamed: @"buddy_invisiblebutton_up.png"]
+                                        forState: 0];
+				[status_button setImage:[UIImage 
+					applicationImageNamed: @"buddy_invisiblebutton_down.png"]
+                                        forState: 1];
+				is_invisible = YES;
+			}
+      			
 			NSArray * users = [[UserManager sharedInstance] getUsers];
 			int i = 0;
 			for(i; i<[users count]; i++)
 			{
 				[[users objectAtIndex:i] setAway: is_away];
+				[[users objectAtIndex:i] setInvisible: is_invisible];
 			}
 		}
 		else if(button == add_button)

@@ -32,6 +32,7 @@
 @interface ApolloCore : NSObject
 {
   User* eyeTheAccount;
+  PurpleAccount* eyeThePurpleAccount;
   EyeCandy *_eyeCandy; 
 	NSThread* mainLoopThread;
 	int	connections;
