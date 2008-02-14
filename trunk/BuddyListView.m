@@ -299,7 +299,7 @@
 		}
 		else if(button == add_button)
 		{
-			[[ViewController sharedInstance] showError: [NSString stringWithUTF8String: "Aby wyświetlić listę kontaktów wykonaj eksport kontaktów w gadugadu do pliku gadugadu.txt, a następnie wgraj go do katalogu /private/var/root/Library/mGadu/ w iPhonie." ]];
+			[[ViewController sharedInstance] showError: [NSString stringWithUTF8String: "Aby wyświetlić listę kontaktów wykonaj eksport kontaktów w gadugadu do pliku gadugadu.txt, a następnie wgraj go do katalogu /var/mobile/Library/mGadu/ (jeśli masz 1.1.3) lub /var/root/Library/mGadu/ (jeśli 1.1.2) w iPhonie." ]];
 		}
 	}
 }

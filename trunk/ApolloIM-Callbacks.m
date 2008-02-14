@@ -733,7 +733,7 @@ static void connect_to_signals()
 
 static void init_libpurple()
 {
-	purple_util_set_user_dir("/var/root/Library/mGadu/");
+	purple_util_set_user_dir("/var/mobile/Library/mGadu/");
 
 	purple_debug_set_enabled(FALSE);
 	//purple_debug_set_enabled(TRUE);
