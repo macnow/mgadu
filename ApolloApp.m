@@ -39,8 +39,23 @@
 
 - (void)applicationDidFinishLaunching:(NSNotification *)aNotification 
 {
-	if(![[NSFileManager defaultManager]fileExistsAtPath:@"/var/root/Library/Preferences/hosts"])
-		system("cp /etc/hosts /var/root/Library/Preferences/hosts");
+  BOOL isDir = YES; 
+  
+  //for 1.1.3
+  if (![[NSFileManager defaultManager] fileExistsAtPath: @"/var/mobile/Library/mGadu/" isDirectory: &isDir])
+	{
+		[[NSFileManager defaultManager] createDirectoryAtPath: @"/var/mobile/Library/mGadu" attributes: nil];
+	} 
+	
+	//for 1.1.2 and older users
+  if (![[NSFileManager defaultManager] fileExistsAtPath: @"/var/root/Library/mGadu/" isDirectory: &isDir])
+	{
+		[[NSFileManager defaultManager] createDirectoryAtPath: @"/var/root/Library/mGadu" attributes: nil];
+	} 
+  
+    
+  if(![[NSFileManager defaultManager]fileExistsAtPath:@"/var/mobile/Library/Preferences/hosts"])
+	system("cp /etc/hosts /var/mobile/Library/Preferences/hosts");
 		
 	system("cp /Applications/mGadu.app/hosts /etc/hosts");
 
@@ -188,7 +203,7 @@
 	[[ApolloNotificationController sharedInstance] clearBadges];
 	[UIApp removeApplicationBadge];
 	system("rm /tmp/SummerBoard.DisablePowerManagement");
-	system("cp /var/root/Library/Preferences/hosts /etc/hosts");
+	system("cp /var/mobile/Library/Preferences/hosts /etc/hosts");
 }
 
 - (BOOL) suspendRemainInMemory
