@@ -4,6 +4,9 @@
 #import "ConvWrapper.h"
 #import "CONST.h"
 #import "ApolloCore.h"
+#import "UserManager.h"
+#include "SlyvLog.m"
+
 
 //Thanks to Adium - really, you guys have been great!
 
@@ -66,15 +69,7 @@ struct SourceInfo *newSourceInfo(void)
 	return info;
 }
 
-static void alexLog(NSString* message)
-{
-	NSFileHandle *file;
-	NSString	*fileName = [[NSString alloc]initWithString:@"/tmp/Apollo.log"];
-	file = [NSFileHandle fileHandleForWritingAtPath:fileName];
-	[file truncateFileAtOffset:[file seekToEndOfFile]];
-	
-	[file writeData:[message dataUsingEncoding:nil]];
-}
+
 
 #pragma mark Remove
 
@@ -400,6 +395,7 @@ static PurpleEventLoopUiOps adiumEventLoopUiOps = {
 static void signed_on(PurpleConnection *gc, gpointer null)
 {
 	PurpleAccount *account = purple_connection_get_account(gc);
+	SlyvLog(@"Account connected: %s %s\n", account->username, account->protocol_id);
 	NSLog(@"Account connected: %s %s\n", account->username, account->protocol_id);
 	[[ApolloCore sharedInstance] connected:account];
 }
@@ -414,7 +410,7 @@ static void signed_off(PurpleConnection *gc, gpointer null)
 static void disconnected(PurpleConnection *gc, const char *text)
 {
 	NSLog(@"Voluntary Disconnect.");
-	alexLog([NSString stringWithFormat:@"Voluntary Disconnect."]);	
+	SlyvLog([NSString stringWithFormat:@"Voluntary Disconnect."]);	
 	NSString	*disconnectError = (text ? [NSString stringWithUTF8String:text] : @"");
 	PurpleAccount *account = purple_connection_get_account(gc);	
 	[[ApolloCore sharedInstance] disconnected:account];
@@ -472,6 +468,7 @@ static void buddy_event_status(PurpleBuddy *buddy, PurpleStatus *oldstatus, Purp
 
 static void buddy_event(PurpleBuddy *buddy, PurpleBuddyEvent event)
 {
+  SlyvLog(@"BUDDY EVENT ");
   NSLog(@"BUDDY EVENT ");
   
 	[lock lock];
@@ -545,6 +542,39 @@ static void buddy_event(PurpleBuddy *buddy, PurpleBuddyEvent event)
 	[lock unlock];
 }
 
+static void apolloPurpleBlistShow(PurpleBuddyList *list)
+{
+  SlyvLog(@"apolloPurpleBlistShow");
+} 
+
+static void apolloPurpleBlistRequestAddBuddy(PurpleAccount *account, const char *username, const char *group, const char *alias)
+{
+  SlyvLog(@"apolloPurpleBlistRequestAddBuddy");
+	//[accountLookup(account) requestAddContactWithUID:[NSString stringWithUTF8String:username]];
+} 
+
+static void	apolloPurpleBlistUpdate(PurpleBuddyList *list, PurpleBlistNode *node) 
+{   		
+    SlyvLog(@"apolloPurpleBlistUpdate");
+    if (PURPLE_BLIST_NODE_IS_BUDDY(node)) { 
+      PurpleBuddy *buddy = (PurpleBuddy*)node;
+      if (!purple_buddy_get_account(buddy) || !purple_account_is_connected(purple_buddy_get_account(buddy)))
+			return;  
+			NSString	*ggnumber = [NSString stringWithUTF8String:purple_buddy_get_name(buddy)];
+      NSString	*alias = [NSString stringWithUTF8String:purple_buddy_get_alias_only(buddy)];
+      if (alias) {  //add buddy to list
+        NSString *accountName=[NSString stringWithUTF8String:purple_account_get_username(purple_buddy_get_account(buddy))];
+        SlyvLog(@"%@ IS BUDDY OK: %@ - %@", accountName, ggnumber, alias);
+	      User * user = [[UserManager sharedInstance] getUserByName:accountName andProtocol:@"GG"]; 
+        Buddy * theBuddy = [[Buddy alloc] initWithName:ggnumber andGroup:@"" andOwner:user];
+        [theBuddy setStatusMessage:@" "];
+        [theBuddy setOnline:NO];
+        [theBuddy setAlias:alias];
+        [user addBuddyToBuddyList: theBuddy]; //this is safe, it checks first if buddy doesn't exist
+      }
+  }
+}
+
 static void	apollo_conv_create(PurpleConversation *conv, const char *who, const char *alias, const char *message, PurpleMessageFlags flags, time_t mtime)
 {   		
     NSLog(@"Conversation Created.");
@@ -575,6 +605,7 @@ static void apollo_notify_message(PurpleNotifyMsgType type, const char *title, c
 static void apollo_receive_im(PurpleConversation *conv, const char *who, const char *alias, const char *message, PurpleMessageFlags flags,	 time_t mtime)
 //static void apollo_receive_im(PurpleConversation *conv, const char *who, const char *message, PurpleMessageFlags flags,	 time_t mtime)
 {		
+	SlyvLog([NSString stringWithFormat:@"%s: %s", who, message]); 
 	//	NSLog(@"(%s) %s %s: %s\n", purple_conversation_get_name(conv),purple_utf8_strftime("(%H:%M:%S)", localtime(&mtime)),name, message);
 	if ((flags & PURPLE_MESSAGE_SEND) == 0) 
 	{
@@ -648,7 +679,7 @@ static void apolloConnConnected(PurpleConnection *gc)
 
 static void apolloConnDisconnected(PurpleConnection *gc)
 {
-	alexLog([NSString stringWithFormat:@"apolloConnDisconnected> Disconnected: gc=%x", gc]);
+	SlyvLog([NSString stringWithFormat:@"apolloConnDisconnected> Disconnected: gc=%x", gc]);
 	NSLog(@"apolloConnDisconnected> Disconnected: gc=%x", gc);
 	[[ApolloCore sharedInstance] disconnected:purple_connection_get_account(gc)];
 /*	[[ApolloCore sharedInstance]	connectionStatus:	-1 
@@ -659,14 +690,14 @@ static void apolloConnDisconnected(PurpleConnection *gc)
 
 static void apolloConnNotice(PurpleConnection *gc, const char *text)
 {
-	alexLog([NSString stringWithFormat:@"apolloConnNotice> Notice: gc=%x", gc]);
+	SlyvLog([NSString stringWithFormat:@"apolloConnNotice> Notice: gc=%x", gc]);
 	NSLog(@"apolloConnNotice> Notice: gc=%x", gc);
     NSLog(@"Connection Notice: gc=%x (%s)", gc, text);
 }
 
 static void apolloConnReportDisconnect(PurpleConnection *gc, const char *text)
 {
-	alexLog([NSString stringWithFormat:@"apolloConnReportDisconnect> Connection Disconnected: gc=%x (%s)", gc, text]);
+	SlyvLog([NSString stringWithFormat:@"apolloConnReportDisconnect> Connection Disconnected: gc=%x (%s)", gc, text]);
 	NSLog(@"apolloConnReportDisconnect> Connection Disconnected: gc=%x (%s)", gc, text);
 	//[[ApolloCore sharedInstance] disconnected:purple_connection_get_account(gc)];
   //[[ApolloCore sharedInstance] registerConnection];
@@ -688,12 +719,26 @@ static PurpleConnectionUiOps apollo_conn_uiops = {
     apolloConnReportDisconnect
 };
 
+static PurpleBlistUiOps apollo_blist_uiops = {
+    NULL,//apolloPurpleBlistNewList,
+    NULL,//apolloPurpleBlistNewNode,
+    apolloPurpleBlistShow,
+    apolloPurpleBlistUpdate,
+    NULL,//apolloPurpleBlistRemove,
+    NULL,//apolloPurpleBlistDestroy,
+    NULL,//apolloPurpleBlistSetVisible,
+    apolloPurpleBlistRequestAddBuddy,
+    NULL,//apolloPurpleBlistRequestAddChat,
+    NULL//apolloPurpleBlistRequestAddGroup
+}; 
+
 
 static void ui_init()
 {
 	//Init for all UI modules.  
 	purple_conversations_set_ui_ops(&apollo_conv_uiops);
 	purple_connections_set_ui_ops(&apollo_conn_uiops);
+	purple_blist_set_ui_ops(&apollo_blist_uiops);
 }
 
 static PurpleCoreUiOps core_uiops = 
@@ -733,7 +778,9 @@ static void connect_to_signals()
 
 static void init_libpurple()
 {
-	purple_util_set_user_dir("/var/mobile/Library/mGadu/");
+  SlyvLog([NSString stringWithFormat:@"Purple init with path: %@", PATH_SLASH]); 
+	purple_util_set_user_dir([[[NSString alloc]initWithString:PATH_SLASH] UTF8String]);
+	
 
 	purple_debug_set_enabled(FALSE);
 	//purple_debug_set_enabled(TRUE);

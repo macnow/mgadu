@@ -28,6 +28,7 @@
 #import "ApolloCore.h"
 #import "UserManager.h"
 #import "ViewController.h"
+#include "SlyvLog.m"
 
 static id sharedInstancePurple;
 
@@ -91,6 +92,7 @@ static id sharedInstancePurple;
 
 -(void) logIn:(User *) auser
 {
+  SlyvLog(@"Login User"); 
 	if([auser isActive])
 	{
 		if([[auser getProtocol] isEqualToString:DOTMAC])

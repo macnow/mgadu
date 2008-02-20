@@ -24,6 +24,7 @@
 #import "BuddyListView.h"
 #import "BuddyCell.h"
 
+#include "SlyvLog.m"
 #include "User.h"
 #include "Buddy.h"
 
@@ -35,29 +36,28 @@
 #import "ApolloNotificationController.h"
 
 
+
 @implementation ApolloApp
+
+
 
 - (void)applicationDidFinishLaunching:(NSNotification *)aNotification 
 {
   BOOL isDir = YES; 
   
-  //for 1.1.3
-  if (![[NSFileManager defaultManager] fileExistsAtPath: @"/var/mobile/Library/mGadu/" isDirectory: &isDir])
+  //it should be compatible with 1.1.2 and 1.1.3 and other firmwares
+  if (![[NSFileManager defaultManager] fileExistsAtPath: PATH isDirectory: &isDir])
 	{
-		[[NSFileManager defaultManager] createDirectoryAtPath: @"/var/mobile/Library/mGadu" attributes: nil];
+		[[NSFileManager defaultManager] createDirectoryAtPath: PATH attributes: nil];
 	} 
 	
-	//for 1.1.2 and older users
-  if (![[NSFileManager defaultManager] fileExistsAtPath: @"/var/root/Library/mGadu/" isDirectory: &isDir])
-	{
-		[[NSFileManager defaultManager] createDirectoryAtPath: @"/var/root/Library/mGadu" attributes: nil];
-	} 
+ 
   
     
-  if(![[NSFileManager defaultManager]fileExistsAtPath:@"/var/mobile/Library/Preferences/hosts"])
-	system("cp /etc/hosts /var/mobile/Library/Preferences/hosts");
+  //if(![[NSFileManager defaultManager]fileExistsAtPath:@"/var/mobile/Library/Preferences/hosts"])
+	//system("cp /etc/hosts /var/mobile/Library/Preferences/hosts");
 		
-	system("cp /Applications/mGadu.app/hosts /etc/hosts");
+	//system("cp /Applications/mGadu.app/hosts /etc/hosts");
 
 	NSDate * date = [NSDate date];
 	Preferences * pref = [Preferences sharedInstance];
@@ -144,7 +144,7 @@
 
 - (void)applicationSuspend:(struct __GSEvent *)event 
 {
-	NSLog(@"Suspending...");
+	SlyvLog(@"Suspending...");
 	[[ApolloNotificationController sharedInstance] updateUnreadMessages];
 	[[ViewController sharedInstance] transitionOnResume];
 //	TODO: CODE THAT MOVES FROM ACTIVE CONVO TO BUDDYLISt
@@ -154,10 +154,12 @@
 	
 	if([[ApolloCore sharedInstance] connectionCount] > 0)
 	{
+  	SlyvLog(@"mGadu suspended");
 		[[NSString stringWithString:@"NINJA"]writeToFile:@"/tmp/SummerBoard.DisablePowerManagement" atomically:YES encoding:NSUTF8StringEncoding error:nil];			
 	}
 	else
 	{
+  	SlyvLog(@"mGadu closed");
 		system("rm /tmp/SummerBoard.DisablePowerManagement");		
 		exit(1);
 	}
@@ -166,7 +168,7 @@
 
 - (void)applicationResume:(struct __GSEvent *)event 
 {
-	NSLog(@"Resuming...");
+	SlyvLog(@"Resuming...");
 	ViewController * vc = [ViewController sharedInstance];
 	[vc transitionOnResume];
 	system("rm /tmp/SummerBoard.DisablePowerManagement");	
@@ -175,7 +177,7 @@
 
 - (void)applicationDidResumeFromUnderLock
 {
-	NSLog(@"Resuming from under lock...");
+	SlyvLog(@"Resuming from under lock...");
 		system("rm /tmp/SummerBoard.DisablePowerManagement");	
 }
 
@@ -183,7 +185,7 @@
 {
 	if(![UIApp isLocked])
 	{
-		NSLog(@"Locking...");
+		SlyvLog(@"Locking...");
 		[[NSString stringWithString:@"NINJA"]writeToFile:@"/tmp/SummerBoard.DisablePowerManagement" atomically:YES encoding:NSUTF8StringEncoding error:nil];	
 	}
 }
@@ -203,11 +205,12 @@
 	[[ApolloNotificationController sharedInstance] clearBadges];
 	[UIApp removeApplicationBadge];
 	system("rm /tmp/SummerBoard.DisablePowerManagement");
-	system("cp /var/mobile/Library/Preferences/hosts /etc/hosts");
+	//system("cp /var/mobile/Library/Preferences/hosts /etc/hosts");
 }
 
 - (BOOL) suspendRemainInMemory
 {
+	SlyvLog(@"suspendRemainInMemory");
 	if([[ViewController sharedInstance] isAtLoginView])
 		return NO;
 	return YES;

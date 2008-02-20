@@ -67,10 +67,15 @@ typedef enum
 #define TESTP		@"TestProtocol"
 #define DOTMAC		@".Mac"
 
+//NSString *__library;
+//#define PATH [NSString stringWithFormat:@"%@/mGadu/", __library]
 #define PATH			[@"~/Library/mGadu/" stringByExpandingTildeInPath]
+#define PATH_SLASH			[NSString stringWithFormat: @"%@/", PATH]
 #define GLOBAL_PREF_PATH	[NSString stringWithFormat: @"%@/%@", PATH, @"mGadu.plist"]
 #define USER_PREF_PATH(user)	[NSString stringWithFormat: @"%@/mGadu_%@_%@.plist", PATH, [user getStartingName], [user getProtocol]]
 #define GG_CONTACTS			[NSString stringWithFormat: @"%@/%@", PATH, @"gadugadu.txt"]
+
+
 
 typedef enum
 {

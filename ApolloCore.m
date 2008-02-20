@@ -299,6 +299,8 @@ extern UIApplication *UIApp;
     [UIApp addStatusBarImageNamed: @"mGadu" removeOnAbnormalExit: YES];
 
 
+
+/*
     //NSLog(@"IMPORING GG CONTACTS %@", GG_CONTACTS);
     // assuming data is in WindowsCP1250
     NSString *contents = [[NSMutableString alloc] initWithContentsOfFile:GG_CONTACTS encoding: NSWindowsCP1250StringEncoding error:NULL];
@@ -338,15 +340,16 @@ extern UIApplication *UIApp;
 	        buddyUTF8String = [ggnumber UTF8String]; 
 	        aliasUTF8String = [nick UTF8String]; 
 	        buddy = purple_find_buddy(pa, buddyUTF8String);
-	        
           if (!buddy) {
-            NSLog(@"SLYV buddy CREATE1 %@!!", ggnumber);
+            //SlyvLog(@"SLYV buddy CREATE1 %@ %@!!", ggnumber, nick);
+            NSLog(@"SLYV buddy CREATE1 %@ %@!!", ggnumber, nick);
             buddy = purple_buddy_new(pa, buddyUTF8String, NULL); 
             purple_blist_add_buddy(buddy, NULL, group, NULL);
 	          purple_blist_alias_buddy(buddy,aliasUTF8String); 
 	          purple_account_add_buddy(pa, buddy);
           } else {
-            NSLog(@"SLYV buddy found %@!!", ggnumber);
+            //SlyvLog(@"SLYV buddy found %@  %@!!", ggnumber, nick);
+            NSLog(@"SLYV buddy found %@  %@!!", ggnumber, nick);
           }
 
 
@@ -364,9 +367,10 @@ extern UIApplication *UIApp;
         }
       }
     }
-
+*/
 
 	}		
+	[[ViewController sharedInstance] forceBuddyListRefresh];
 	[_eyeCandy hideProgressHUD]; 
 	
 	//Alert UI with notification
@@ -729,3 +733,7 @@ extern UIApplication *UIApp;
 }
 
 @end
+
+
+
+ 
