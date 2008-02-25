@@ -298,76 +298,11 @@ extern UIApplication *UIApp;
 
     [UIApp addStatusBarImageNamed: @"mGadu" removeOnAbnormalExit: YES];
 
-
-
-/*
-    //NSLog(@"IMPORING GG CONTACTS %@", GG_CONTACTS);
-    // assuming data is in WindowsCP1250
-    NSString *contents = [[NSMutableString alloc] initWithContentsOfFile:GG_CONTACTS encoding: NSWindowsCP1250StringEncoding error:NULL];
-    NSArray *lines = [contents componentsSeparatedByString:@"\n"];
-    NSString *line;
-    User	* user			=	[self getApolloUser:theAccount]; 
-  	Buddy * theBuddy;
-  	int i=0;
-  	//if ([lines count]>30) i=[lines count]-30;
-
-
-		//create group "Buddies"
-		PurpleGroup	*group;
-		PurpleBuddy	*buddy; 
-		const char	*groupUTF8String, *buddyUTF8String, *aliasUTF8String;
-    groupUTF8String = "Buddies"; 
+    User	* user			=	[self getApolloUser:theAccount];
     PurpleAccount * pa = [self getPurpleAccount:user];
-		if (!(group = purple_find_group(groupUTF8String))) {
-		  group = purple_group_new(groupUTF8String);
-		  purple_blist_add_group(group, NULL);
-		  NSLog(@"SLYV group buddies created");
-	  } else {
-      NSLog(@"SLYV group buddies already exists");
-    }
-    
-  	purple_accounts_add(pa);
-
-    for (i=0; i < [lines count]; i++)
-    {
-      line=[lines objectAtIndex:i];
-      NSArray *columns = [line componentsSeparatedByString:@";"];
-      if ([columns count]>=6) {
-        //sleep(1);
-        NSString *nick=[columns objectAtIndex:3];
-        NSString *ggnumber=[columns objectAtIndex:6];
-        if ([ggnumber length]) {
-	        buddyUTF8String = [ggnumber UTF8String]; 
-	        aliasUTF8String = [nick UTF8String]; 
-	        buddy = purple_find_buddy(pa, buddyUTF8String);
-          if (!buddy) {
-            //SlyvLog(@"SLYV buddy CREATE1 %@ %@!!", ggnumber, nick);
-            NSLog(@"SLYV buddy CREATE1 %@ %@!!", ggnumber, nick);
-            buddy = purple_buddy_new(pa, buddyUTF8String, NULL); 
-            purple_blist_add_buddy(buddy, NULL, group, NULL);
-	          purple_blist_alias_buddy(buddy,aliasUTF8String); 
-	          purple_account_add_buddy(pa, buddy);
-          } else {
-            //SlyvLog(@"SLYV buddy found %@  %@!!", ggnumber, nick);
-            NSLog(@"SLYV buddy found %@  %@!!", ggnumber, nick);
-          }
+    purple_accounts_add(pa);
 
 
-          //NSLog(@"CREATE BUDDY %@: %@",nick,ggnumber);
-          theBuddy = [[Buddy alloc] initWithName:ggnumber andGroup:@"" andOwner:user];
-        	[theBuddy setStatusMessage:@" "];
-        	[theBuddy setOnline:NO];
-        	[theBuddy setAlias:nick];
-          [user addBuddyToBuddyList: theBuddy];
-          //this is simple optimization, and it works, we don't need to create conv for each buddy
-          //[[ViewController sharedInstance] createConversationWith: theBuddy];
-	        
-
-  
-        }
-      }
-    }
-*/
 
 	}		
 	[[ViewController sharedInstance] forceBuddyListRefresh];
@@ -505,7 +440,7 @@ extern UIApplication *UIApp;
 	//Gotta retest this.
 	eyeTheAccount=theAccount;
 	_eyeCandy = [[[EyeCandy alloc] init] retain];
-  [_eyeCandy showProgressHUD:[NSString stringWithUTF8String: "Wylogowywanie" ] withWindow:[_delegate getWindow] withView:[ViewController sharedInstance] withRect:CGRectMake(0.0f, 100.0f, 320.0f, 50.0f)];
+  //[_eyeCandy showProgressHUD:[NSString stringWithUTF8String: "Wylogowywanie" ] withWindow:[_delegate getWindow] withView:[ViewController sharedInstance] withRect:CGRectMake(0.0f, 100.0f, 320.0f, 50.0f)];
   [NSTimer scheduledTimerWithTimeInterval:0.02 target:self selector:@selector(disconnect2:) userInfo:nil repeats:NO]; 
 }
 
@@ -529,11 +464,12 @@ extern UIApplication *UIApp;
 			NSLog(@"ApolloCore> <Disconnect> Purple account retrieved %s -- %d", account->username,[theAccount getStatus]);
 			
 			purple_status_type_get_id(purple_account_get_status_type_with_primitive(account, PURPLE_STATUS_OFFLINE));
+			//purple_blist_remove_account(account);
 			purple_account_set_enabled(account, UI_ID, NO);	
 			[theAccount setStatus:OFFLINE];
 			NSLog(@"ApolloCore> Disconnecting...");
 	
-			[theAccount removeAllBuddies];
+			//[theAccount removeAllBuddies];
 		}
 	}
 }

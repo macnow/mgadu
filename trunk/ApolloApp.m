@@ -136,10 +136,10 @@
 {
 	[self resetIdleTimer];
 	[self resetIdleDuration:0.0f];
-	if([UIApp isLocked] || [UIApp isSuspended])
+	/*if([UIApp isLocked] || [UIApp isSuspended])
 	{
 		[[NSString stringWithString:@"NINJA"]writeToFile:@"/tmp/SummerBoard.DisablePowerManagement" atomically:YES encoding:NSUTF8StringEncoding error:nil];	
-	}
+	}*/
 }
 
 - (void)applicationSuspend:(struct __GSEvent *)event 
@@ -155,12 +155,12 @@
 	if([[ApolloCore sharedInstance] connectionCount] > 0)
 	{
   	SlyvLog(@"mGadu suspended");
-		[[NSString stringWithString:@"NINJA"]writeToFile:@"/tmp/SummerBoard.DisablePowerManagement" atomically:YES encoding:NSUTF8StringEncoding error:nil];			
+		//[[NSString stringWithString:@"NINJA"]writeToFile:@"/tmp/SummerBoard.DisablePowerManagement" atomically:YES encoding:NSUTF8StringEncoding error:nil];			
 	}
 	else
 	{
   	SlyvLog(@"mGadu closed");
-		system("rm /tmp/SummerBoard.DisablePowerManagement");		
+		//system("rm /tmp/SummerBoard.DisablePowerManagement");		
 		exit(1);
 	}
 	
@@ -171,14 +171,14 @@
 	SlyvLog(@"Resuming...");
 	ViewController * vc = [ViewController sharedInstance];
 	[vc transitionOnResume];
-	system("rm /tmp/SummerBoard.DisablePowerManagement");	
+	//system("rm /tmp/SummerBoard.DisablePowerManagement");	
 	[[ApolloNotificationController sharedInstance] clearBadges];
 }
 
 - (void)applicationDidResumeFromUnderLock
 {
 	SlyvLog(@"Resuming from under lock...");
-		system("rm /tmp/SummerBoard.DisablePowerManagement");	
+		//system("rm /tmp/SummerBoard.DisablePowerManagement");	
 }
 
 - (void)applicationWillSuspendUnderLock
@@ -186,7 +186,7 @@
 	if(![UIApp isLocked])
 	{
 		SlyvLog(@"Locking...");
-		[[NSString stringWithString:@"NINJA"]writeToFile:@"/tmp/SummerBoard.DisablePowerManagement" atomically:YES encoding:NSUTF8StringEncoding error:nil];	
+		//[[NSString stringWithString:@"NINJA"]writeToFile:@"/tmp/SummerBoard.DisablePowerManagement" atomically:YES encoding:NSUTF8StringEncoding error:nil];	
 	}
 }
 
@@ -204,7 +204,7 @@
 {	
 	[[ApolloNotificationController sharedInstance] clearBadges];
 	[UIApp removeApplicationBadge];
-	system("rm /tmp/SummerBoard.DisablePowerManagement");
+	//system("rm /tmp/SummerBoard.DisablePowerManagement");
 	//system("cp /var/mobile/Library/Preferences/hosts /etc/hosts");
 }
 
