@@ -46,6 +46,12 @@
 {
 	if ((self == [super initWithFrame: aframe]) != nil) 
 	{	
+		struct __GSFont * large_font = [NSClassFromString(@"WebFontCache") 
+					createFontWithFamily:@"Helvetica" traits:0 size:14];
+		float grey[4] = {0.47, 0.47, 0.47, 1.0};
+		float dark_grey[4] = {0.34, 0.34, 0.34, 1.0};
+
+
 		frame = CGRectMake(aframe.origin.x, aframe.origin.y, aframe.size.width, aframe.size.height);
 		
 		float transparent[4] = {0.0, 0.0, 0.0, 0.0};
@@ -59,6 +65,17 @@
 
 		top_bar = [[UIImageView alloc] initWithFrame: CGRectMake(0.0f, 0.0f, 320.0f, 59.0f)];
 		[top_bar setImage:[UIImage applicationImageNamed: @"login_topnav_background.png"]];
+
+		
+		donate_label = [[UITextLabel alloc] initWithFrame: CGRectMake(10.0f, 314.0f, 300.0f, 90.0f)];
+		[donate_label setText: [NSString stringWithUTF8String: "Jeśli chcesz wesprzeć finansowo autora i zmotywować go do dalszej pracy, wejdź na stronę: slyv.republika.pl. Za każdą złotówkę będę szalenie wdzięczny."]];
+		[donate_label setFont:large_font];
+		[donate_label setBackgroundColor: CGColorCreate(colorSpace, transparent)];
+		[donate_label setColor: CGColorCreate(colorSpace, dark_grey)];
+		[donate_label setWrapsText: YES];
+
+		
+
 
 		bottom_bar = [[UIImageView alloc] initWithFrame: CGRectMake(0.0f, frame.size.height - 66.0f, 
 										320.0f, 66.0f)];
@@ -94,7 +111,7 @@
 		[done_button addTarget:self action:@selector(buttonEvent:) forEvents:255];
 
 		user_table = [[UITable alloc] initWithFrame: CGRectMake(0.0, 46.0, 
-								320.0, frame.size.height-(46.0+64.0))];
+								320.0, frame.size.height-(46.0+64.0+100.0))];
 		UITableColumn *col = [[UITableColumn alloc]
 			initWithTitle: @"Account"
 			identifier:@"account"
@@ -113,6 +130,8 @@
 		[self addSubview: bg];
 		[self addSubview: user_table];
 		[self addSubview: top_bar];
+		[self addSubview: donate_label];
+		
 		[self addSubview: bottom_bar];
 		[self addSubview: login_button];
 		[self addSubview: add_button];

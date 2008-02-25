@@ -23,6 +23,7 @@
 #import <UIKit/UITextView.h>
 #import <UIKit/UISwitchControl.h>
 
+#import "ApolloCore.h"
 #import "BuddyListView.h"
 #import "BuddyCell.h"
 #import "User.h"
@@ -86,6 +87,18 @@
                                         forState: 1];
 		[add_button setEnabled:YES];
 		[add_button addTarget:self action:@selector(buttonEvent:) forEvents:255];
+		
+		import_button = [[UIPushButton alloc] initWithTitle:@"" autosizesToFit:NO];
+		[import_button setFrame:CGRectMake((320.0 - ( 7.0 + 7.0 + 7.0 + 96.0 )), 7.0f, 32.0f, 32.0f)];
+		[import_button setImage:[UIImage applicationImageNamed: @"buddies_import_up.png"]
+                                        forState: 0];
+		[import_button setImage:[UIImage applicationImageNamed: @"buddies_import_down.png"]
+                                        forState: 1];
+		[import_button setEnabled:YES];
+		[import_button addTarget:self action:@selector(buttonEvent:) forEvents:255];
+		
+		
+		
 
 		status_button = [[UIPushButton alloc] initWithFrame:CGRectMake((320.0 - (7.0+32.0)), 7.0f, 
 											32.0, 32.0)];
@@ -121,6 +134,7 @@
 		[self addSubview: top_bar];
 		[self addSubview: logout_button];
 		[self addSubview: add_button];
+		[self addSubview: import_button];
 		[self addSubview: status_button];
 
 		[self reloadData];
@@ -246,6 +260,8 @@
 	[self refreshTable];
 }
 
+
+
 - (void) buttonEvent:(UIPushButton *)button 
 {
 	if (![button isPressed] && [button isHighlighted])
@@ -299,7 +315,24 @@
 		}
 		else if(button == add_button)
 		{
-			[[ViewController sharedInstance] showError: [NSString stringWithUTF8String: "Aby wyświetlić listę kontaktów wykonaj eksport kontaktów w gadugadu do pliku gadugadu.txt, a następnie wgraj go do katalogu /var/mobile/Library/mGadu/ (jeśli masz 1.1.3) lub /var/root/Library/mGadu/ (jeśli 1.1.2) w iPhonie." ]];
+			[[ViewController sharedInstance] showError: [NSString stringWithUTF8String: "Opcja będzie dostępna w następnej wersji programu" ]];
+		}
+		else if(button == import_button)
+		{
+		  PurpleAccount * pa;
+  		NSArray * users = [[UserManager sharedInstance]	getUsers];
+  		
+    	int i = 0;
+    	for(i; i<[users count]; i++)
+    	{
+    		User * u = [users objectAtIndex:i];
+    		if([u isActive]) {
+          pa = [[ApolloCore sharedInstance] getPurpleAccount:u];
+          break;
+        }
+		  }
+				
+			[[ViewController sharedInstance] transitionToImportView: pa];
 		}
 	}
 }

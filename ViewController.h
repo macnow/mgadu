@@ -30,6 +30,7 @@
 #import "Conversation.h"
 #import "BuddyListView.h"
 #import "AccountEditView.h"
+#import "ImportView.h"
 #import "LoginView.h"
 
 @interface ViewController : UIView
@@ -43,6 +44,7 @@
 	LoginView * login_view;
 	BuddyListView * buddy_list_view;
 	AccountEditView * account_edit_view;
+	ImportView * import_view;
 
 	UIView * current_view;
 	UIView * prev_view;
@@ -58,6 +60,7 @@
 -(void) transitionTo:(UIView *) view slideDirection:(int) style;
 -(CGRect) getFrame;
 -(void) transitionToLoginView;
+-(void) transitionToImportView;
 -(void) transitionToAccountEditView;
 -(void) transitionToAccountEditViewWithUser:(User *) user;
 -(void) transitionToBuddyListView;

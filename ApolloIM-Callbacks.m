@@ -559,12 +559,17 @@ static void	apolloPurpleBlistUpdate(PurpleBuddyList *list, PurpleBlistNode *node
     if (PURPLE_BLIST_NODE_IS_BUDDY(node)) { 
       PurpleBuddy *buddy = (PurpleBuddy*)node;
       if (!purple_buddy_get_account(buddy) || !purple_account_is_connected(purple_buddy_get_account(buddy)))
-			return;  
+			 return;  
 			NSString	*ggnumber = [NSString stringWithUTF8String:purple_buddy_get_name(buddy)];
-      NSString	*alias = [NSString stringWithUTF8String:purple_buddy_get_alias_only(buddy)];
-      if (alias) {  //add buddy to list
+  		/*PurpleGroup		*g = purple_buddy_get_group(buddy);
+      NSString		*groupName = ((g && purple_group_get_name(g)) ? [NSString stringWithUTF8String:purple_group_get_name(g)] : nil); 
+      */
+      if (purple_buddy_get_alias_only(buddy)) {  //add buddy to list
+        NSString	*alias = [NSString stringWithUTF8String:purple_buddy_get_alias_only(buddy)];
         NSString *accountName=[NSString stringWithUTF8String:purple_account_get_username(purple_buddy_get_account(buddy))];
+        //SlyvLog(@"%@ IS BUDDY OK: %@ - %@; group: %@", accountName, ggnumber, alias, groupName);
         SlyvLog(@"%@ IS BUDDY OK: %@ - %@", accountName, ggnumber, alias);
+
 	      User * user = [[UserManager sharedInstance] getUserByName:accountName andProtocol:@"GG"]; 
         Buddy * theBuddy = [[Buddy alloc] initWithName:ggnumber andGroup:@"" andOwner:user];
         [theBuddy setStatusMessage:@" "];
@@ -778,8 +783,8 @@ static void connect_to_signals()
 
 static void init_libpurple()
 {
-  SlyvLog([NSString stringWithFormat:@"Purple init with path: %@", PATH_SLASH]); 
 	purple_util_set_user_dir([[[NSString alloc]initWithString:PATH_SLASH] UTF8String]);
+  SlyvLog([NSString stringWithFormat:@"Purple init with path: %@", PATH_SLASH]); 
 	
 
 	purple_debug_set_enabled(FALSE);

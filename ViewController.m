@@ -128,6 +128,16 @@ static id sharedInstanceViewControl;
 	[self transitionTo:account_edit_view slideDirection:1];
 }
 
+-(void) transitionToImportView:(PurpleAccount *) account
+{
+	if(import_view)
+		[import_view release];
+
+	import_view = [[ImportView alloc] initWithFrame:frame withAccount:account];
+	[self transitionTo:import_view slideDirection:1];
+}
+
+
 -(void) transitionToAccountEditViewWithUser:(User *) user
 {
 	if(account_edit_view)
@@ -222,6 +232,17 @@ static id sharedInstanceViewControl;
 	//UIAlertSheet *sheet = [[UIAlertSheet alloc] initWithFrame: CGRectMake(0, 240, 320, 240)];
 	UIAlertSheet* sheet = [[UIAlertSheet alloc] initWithTitle:[NSString stringWithUTF8String: "Błąd:"] buttons:nil defaultButtonIndex:1 delegate:self context:nil];	
         [sheet setBodyText: error];
+        [sheet addButtonWithTitle:@"OK"];
+	[sheet setAlertSheetStyle:0];		
+	[sheet popupAlertAnimated: YES];
+        //[sheet presentSheetFromAboveView: self];
+}
+
+-(void) showMessage:(NSString *) msg withTitle:(NSString*)title
+{
+	//UIAlertSheet *sheet = [[UIAlertSheet alloc] initWithFrame: CGRectMake(0, 240, 320, 240)];
+	UIAlertSheet* sheet = [[UIAlertSheet alloc] initWithTitle:title buttons:nil defaultButtonIndex:1 delegate:self context:nil];	
+        [sheet setBodyText: msg];
         [sheet addButtonWithTitle:@"OK"];
 	[sheet setAlertSheetStyle:0];		
 	[sheet popupAlertAnimated: YES];

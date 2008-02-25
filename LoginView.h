@@ -33,6 +33,7 @@
 	UIPushButton * done_button;
 	UIPushButton * add_button;
 	UITable * user_table;
+	UITextLabel * donate_label;
 
 	NSMutableArray * accounts;
 	NSMutableArray * cells;

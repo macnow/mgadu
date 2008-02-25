@@ -33,6 +33,7 @@
 	UIPushButton * logout_button;
 	UIPushButton * status_button;
 	UIPushButton * add_button;
+	UIPushButton * import_button;
 
 	UITable * buddy_table;
 	UISectionList * buddy_list;
@@ -57,4 +58,5 @@
 - (int)numberOfRowsInTable:(UITable *)table;
 - (void)reloadData;
 - (void)refreshTable;
+
 @end
