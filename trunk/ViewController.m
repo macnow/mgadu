@@ -155,6 +155,8 @@ static id sharedInstanceViewControl;
 	{
 		conv = [[Conversation alloc] initWithFrame: frame 
 					withOwner:[buddy getOwner] withBuddy: buddy andDelegate:self];
+		[conv retain];
+
 		[buddy_conversations setObject:conv forKey:[buddy getID]];
 	}
 
@@ -169,6 +171,7 @@ static id sharedInstanceViewControl;
 	{
 		conv = [[Conversation alloc] initWithFrame: frame 
 					withOwner:[buddy getOwner] withBuddy: buddy andDelegate:self];
+		[conv retain];
 		[buddy_conversations setObject:conv forKey:[buddy getID]];
 
 		NSLog(@"Creating Conversation For: %@", [buddy getName]);
@@ -184,6 +187,7 @@ static id sharedInstanceViewControl;
 	[buddy clearMessageCount];
 	Conversation * conv = [self createConversationWith:buddy];
 	[[[buddy getOwner] getProtocolInterface] removeEventListener:conv];
+	[conv release];
 	
 	[buddy_conversations removeObjectForKey:[buddy getID]];
 }

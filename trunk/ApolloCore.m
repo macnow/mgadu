@@ -198,10 +198,7 @@ extern UIApplication *UIApp;
 	up->ap_user = theAccount;
 	up->purp_user = account;
 
-//	NSLog(@"ID: %@", [theAccount getID]);
-//	NSLog(@"PROTO: %@", [theAccount getProtocol]);
-	if(	[activeAccounts objectForKey:[theAccount getID]]!=nil || 
-		[theAccount getStatus] !=OFFLINE)
+	if(	[activeAccounts objectForKey:[theAccount getID]]!=nil || [theAccount getStatus] !=OFFLINE)
 	{
 		NSLog(@"ApolloCore> Why would we try to connect an already connected account?");
 	  [_eyeCandy hideProgressHUD];
@@ -214,11 +211,10 @@ extern UIApplication *UIApp;
 			[pendingAccounts setObject:up forKey:[theAccount getID]];
 	}
 	
-/*	if([USER_ID(account)isEqualToString:[theAccount getID]])
-		NSLog(@"!!!!!!!!!!EQUAL");
-		else
-		NSLog(@" %@ -- %@ -- %s", USER_ID(account), [theAccount getID], account->protocol_id);*/
-	
+
+
+
+
 	if(!([[NetworkController sharedInstance]isNetworkUp]))
 	{
 		if(![[NetworkController sharedInstance]isEdgeUp])
@@ -226,11 +222,12 @@ extern UIApplication *UIApp;
 			[[NetworkController sharedInstance]keepEdgeUp];									
 			[[NetworkController sharedInstance]bringUpEdge];
 			[[ViewController sharedInstance]connectStep:0 forAccount:[theAccount getName] withMessage:@"Bringing Edge up..." connected:NO];						
-			sleep(10);
+			sleep(5);
 			//[[PurpleInterface sharedInstance]fireEvent:[[Event alloc] initWithUser:theAccount type:NETWORK_EDGE content:@""]];		
 		}
 		else
 		{
+      SlyvLog(@"No working internet connections.");
 			//No working internet connections.
 			//Send alert that connecting isn't possible.
 			[[ViewController sharedInstance] connectionFailureFor:[theAccount getName] withMessage:@"No network available." isDisconnect:NO];
@@ -250,23 +247,13 @@ extern UIApplication *UIApp;
 	//PurpleAccount* account = [self getPurpleAccount:theAccount];	
 }
 
+
+
+
+  
+  
 - (void)connected:(PurpleAccount*)theAccount
 {
-	//Alert UI with notification of pending disconnect?
-	//Gotta retest this.
-	eyeThePurpleAccount=theAccount;
-  [_eyeCandy hideProgressHUD];
-  _eyeCandy = [[[EyeCandy alloc] init] retain]; 
-  [_eyeCandy showProgressHUD:[NSString stringWithUTF8String: "Ładowanie listy znajomych" ] withWindow:[_delegate getWindow] withView:[ViewController sharedInstance] withRect:CGRectMake(0.0f, 100.0f, 320.0f, 50.0f)];
-  [NSTimer scheduledTimerWithTimeInterval:0.02 target:self selector:@selector(connected2:) userInfo:nil repeats:NO]; 
-}
-
-
-  
-  
-- (void)connected2:(id)param 
-{
-  PurpleAccount *theAccount=eyeThePurpleAccount;
 
  	NSLog(@"ApolloCore> CONNECTED -- %@ -- %@", USER_ID(theAccount), self);
 	UserPair * connectedAccount = [pendingAccounts objectForKey:USER_ID(theAccount)];
@@ -331,7 +318,7 @@ extern UIApplication *UIApp;
 		[pendingAccounts setObject:disconnectedAccount forKey:USER_ID(theAccount)];  //This might not be needed.  Ensure the account is removed from actives.		
 		[activeAccounts removeObjectForKey:USER_ID(theAccount)];
 		[pendingAccounts removeObjectForKey:USER_ID(theAccount)];		
-//		[disconnectedAccount->ap_user setStatus:OFFLINE];	
+		//[disconnectedAccount->ap_user setStatus:OFFLINE];	
 		NSLog(@"Fully disconnected.");
 		if(!(connections <= 0))
 		{
@@ -425,7 +412,7 @@ extern UIApplication *UIApp;
 - (void)connect:(User*) theAccount  
 {
 	_eyeCandy = [[[EyeCandy alloc] init] retain];
-  [_eyeCandy showProgressHUD:[NSString stringWithUTF8String: "Łączenie..." ] withWindow:[_delegate getWindow] withView:[ViewController sharedInstance] withRect:CGRectMake(0.0f, 100.0f, 320.0f, 50.0f)];
+  [_eyeCandy showProgressHUD:[NSString stringWithUTF8String: "Logowanie..." ] withWindow:[_delegate getWindow] withView:[ViewController sharedInstance] withRect:CGRectMake(0.0f, 100.0f, 320.0f, 50.0f)];
   //[NSTimer scheduledTimerWithTimeInterval:2 target:self selector:@selector(handleTimer:)  userInfo:nil repeats:NO];
   eyeTheAccount=theAccount;  
   [NSTimer scheduledTimerWithTimeInterval:0.02 target:self selector:@selector(registerConnection:) userInfo:nil repeats:NO]; 
@@ -440,7 +427,7 @@ extern UIApplication *UIApp;
 	//Gotta retest this.
 	eyeTheAccount=theAccount;
 	_eyeCandy = [[[EyeCandy alloc] init] retain];
-  //[_eyeCandy showProgressHUD:[NSString stringWithUTF8String: "Wylogowywanie" ] withWindow:[_delegate getWindow] withView:[ViewController sharedInstance] withRect:CGRectMake(0.0f, 100.0f, 320.0f, 50.0f)];
+  [_eyeCandy showProgressHUD:[NSString stringWithUTF8String: "Wylogowywanie" ] withWindow:[_delegate getWindow] withView:[ViewController sharedInstance] withRect:CGRectMake(0.0f, 100.0f, 320.0f, 50.0f)];
   [NSTimer scheduledTimerWithTimeInterval:0.02 target:self selector:@selector(disconnect2:) userInfo:nil repeats:NO]; 
 }
 
@@ -464,12 +451,11 @@ extern UIApplication *UIApp;
 			NSLog(@"ApolloCore> <Disconnect> Purple account retrieved %s -- %d", account->username,[theAccount getStatus]);
 			
 			purple_status_type_get_id(purple_account_get_status_type_with_primitive(account, PURPLE_STATUS_OFFLINE));
-			//purple_blist_remove_account(account);
 			purple_account_set_enabled(account, UI_ID, NO);	
 			[theAccount setStatus:OFFLINE];
 			NSLog(@"ApolloCore> Disconnecting...");
 	
-			//[theAccount removeAllBuddies];
+			[theAccount removeAllBuddies];
 		}
 	}
 }

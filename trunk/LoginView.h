@@ -22,11 +22,15 @@
 #import <UIKit/UIImage.h>
 #import <UIKit/UITextView.h>
 #import <UIKit/UISwitchControl.h>
+#import "EyeCandy.h" 
 
 #import "User.h"
 
 @interface LoginView : UIView 
 {
+  EyeCandy *_eyeCandy; 
+	id _delegate;
+	
 	UIImageView * top_bar;
 	UIImageView * bottom_bar;
 	UIPushButton * login_button;
@@ -48,4 +52,5 @@
 - (UIImageAndTextTableCell *)table:(UITable *)table cellForRow:(int)row column:(UITableColumn *)col;
 - (int)numberOfRowsInTable:(UITable *)table;
 - (void)reloadData;
+- (void)loginButton;
 @end

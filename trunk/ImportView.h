@@ -48,9 +48,13 @@
 
 #import "AccountTypeSelector.h"
 #import "User.h"
+#import "EyeCandy.h" 
 
 @interface ImportView : UIView
 {
+  EyeCandy *_eyeCandy; 
+	id _delegate;
+
   PurpleAccount * account;
 	UIPreferencesTable * pref_table;
   
@@ -66,6 +70,9 @@
 }
 
 -(id) initWithFrame:(CGRect) aframe;
+-(void) importFromServer:(id)param;
+-(void) importFromServerFinished:(id)param;
+
 -(void) importFromFile;
 -(void) removeAllBuddies;
  

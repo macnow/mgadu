@@ -23,6 +23,8 @@
 #import "Preferences.h"
 #import "ProtocolManager.h"
 #import "ProtocolInterface.h"
+#import "NetworkController.h"
+
 
 id sharedInstanceUserManager = nil;
 NSString * account_key = @"account_list";
@@ -139,10 +141,34 @@ NSString * account_key = @"account_list";
 	[[Preferences sharedInstance] setGlobalPrefWithKey: account_key andValue: p_out];
 }
 
+
+
+
 -(BOOL) loginAll
 {
 	BOOL ret = YES;
 	BOOL one_active = NO;
+
+
+	if(!([[NetworkController sharedInstance]isNetworkUp]))
+	{
+		if(![[NetworkController sharedInstance]isEdgeUp])
+		{
+			[[NetworkController sharedInstance]keepEdgeUp];									
+			[[NetworkController sharedInstance]bringUpEdge];
+			sleep(5);
+			//[[PurpleInterface sharedInstance]fireEvent:[[Event alloc] initWithUser:theAccount type:NETWORK_EDGE content:@""]];
+      NSLog(@"Edge is UP");	
+		}
+		else
+		{
+      NSLog(@"No working internet connections.");
+			//No working internet connections.
+			//Send alert that connecting isn't possible.
+			return NO;
+		}
+	}
+
 	NSArray * users = [self getUsers];
 	int i = 0;
 	for(i; i<[users count]; i++)
