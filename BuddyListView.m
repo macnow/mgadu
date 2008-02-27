@@ -67,8 +67,8 @@
 		UIImageView * bg = [[UIImageView alloc] initWithFrame: CGRectMake(0.0f, 0.0f, 320.0f, frame.size.height)];
 		[bg setImage:[UIImage applicationImageNamed: @"login_background.png"]];
 
-		top_bar = [[UIImageView alloc] initWithFrame: CGRectMake(0.0f, 0.0f, 320.0f, 64.0f)];
-		[top_bar setImage:[UIImage applicationImageNamed: @"buddy_topnav_background.png"]];
+		top_bar = [[UIImageView alloc] initWithFrame: CGRectMake(0.0f, 0.0f, 320.0f, 50.0f)];
+		[top_bar setImage:[UIImage applicationImageNamed: @"buddy_topnav_background2.png"]];
 
 		logout_button = [[UIPushButton alloc] initWithTitle:@"" autosizesToFit:NO];
 		[logout_button setFrame:CGRectMake(5.0, 7.0, 66.0, 32.0)];

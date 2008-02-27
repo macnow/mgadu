@@ -441,8 +441,10 @@ static void buddy_event_status(PurpleBuddy *buddy, PurpleStatus *oldstatus, Purp
 	else
 		newMessage = [[NSString alloc]initWithString:@"  "];
 
+	buddy_owner = [[ApolloCore sharedInstance] getApolloUser: buddy->account];
 	
 	NSLog(@"=------");
+	NSLog(@"buddy_event_status> OWNER: %@",[buddy_owner getName]);
 	NSLog(@"buddy_event_status> WHO: %s",buddy->name);
 	NSLog(@"buddy_event_status> AVAILABLE: %d",isAvailable);
 	NSLog(@"buddy_event_status> MOBILE: %d",isMobile);
@@ -468,10 +470,10 @@ static void buddy_event_status(PurpleBuddy *buddy, PurpleStatus *oldstatus, Purp
 
 static void buddy_event(PurpleBuddy *buddy, PurpleBuddyEvent event)
 {
+	[lock lock];
   SlyvLog(@"BUDDY EVENT ");
   NSLog(@"BUDDY EVENT ");
   
-	[lock lock];
 	if (buddy) 
 	{
 		User * buddy_owner = [[ApolloCore sharedInstance] getApolloUser: buddy->account];
@@ -555,6 +557,7 @@ static void apolloPurpleBlistRequestAddBuddy(PurpleAccount *account, const char 
 
 static void	apolloPurpleBlistUpdate(PurpleBuddyList *list, PurpleBlistNode *node) 
 {   		
+    [lock lock];
     SlyvLog(@"apolloPurpleBlistUpdate");
     if (PURPLE_BLIST_NODE_IS_BUDDY(node)) { 
       PurpleBuddy *buddy = (PurpleBuddy*)node;
@@ -571,6 +574,7 @@ static void	apolloPurpleBlistUpdate(PurpleBuddyList *list, PurpleBlistNode *node
         SlyvLog(@"%@ IS BUDDY OK: %@ - %@", accountName, ggnumber, alias);
 
 	      User * user = [[UserManager sharedInstance] getUserByName:accountName andProtocol:@"GG"]; 
+        SlyvLog(@"USER: %@", [user getName]);
         Buddy * theBuddy = [[Buddy alloc] initWithName:ggnumber andGroup:@"" andOwner:user];
         [theBuddy setStatusMessage:@" "];
         [theBuddy setOnline:NO];
@@ -578,6 +582,7 @@ static void	apolloPurpleBlistUpdate(PurpleBuddyList *list, PurpleBlistNode *node
         [user addBuddyToBuddyList: theBuddy]; //this is safe, it checks first if buddy doesn't exist
       }
   }
+  [lock unlock];
 }
 
 static void	apollo_conv_create(PurpleConversation *conv, const char *who, const char *alias, const char *message, PurpleMessageFlags flags, time_t mtime)

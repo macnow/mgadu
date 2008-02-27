@@ -30,6 +30,7 @@
 #import "ImportView.h"
 #import "ViewController.h"
 #import "PurpleInterface.h"
+#import "EyeCandy.h" 
 
 static void plugin_server_import_cb (PurplePluginAction * action)
 {
@@ -178,44 +179,9 @@ static void plugin_server_import_userdata_cb (PurplePluginAction * action)
 {
   switch ([pref_table selectedRow]) {
     case 1:
-      NSLog(@"server import");
-      //PurpleAccount
-      PurplePlugin *plugin = purple_account_get_connection(account)->prpl;
-		
-		  if (PURPLE_PLUGIN_HAS_ACTIONS(plugin)) { 
-  			GList	*l, *actions;
-  			actions = PURPLE_PLUGIN_ACTIONS(plugin, purple_account_get_connection(account));
- 
-  			//Avoid adding separators between nonexistant items (i.e. items which Purple shows but we don't)
-  			BOOL	addedAnAction = NO;
-  			for (l = actions; l; l = l->next) {
-  				if (l->data) {
-  					PurplePluginAction	*action;
-  					NSDictionary		*dict;
-  					NSString			*title;
-  					action = (PurplePluginAction *) l->data;
-  					title=[NSString stringWithUTF8String:action->label];
-  					if ([title isEqualToString:@"Download buddylist from Server"]) {
-  				    NSLog(@"SLYV ACTION: %@", title);
-          		PurplePluginAction *act = purple_plugin_action_new(NULL, action->callback);
-          		if (act->callback) {
-    				    NSLog(@"SLYV CALLING CALLBACK: %@", title);
-          			act->plugin = purple_account_get_connection(account)->prpl;
-          			act->context = purple_account_get_connection(account);
-          			act->callback(act);
-    				    NSLog(@"SLYV CALLBACK FINISHED: %@", title);
-    				    [[ViewController sharedInstance] showMessage: [NSString stringWithUTF8String: "" ] withTitle:[NSString stringWithUTF8String: "Import kontaktów z serwera zakończony"]];
-          		} else {
-    				    [[ViewController sharedInstance] showMessage: [NSString stringWithUTF8String: "Spróbuj ponownie za chwilę" ] withTitle:[NSString stringWithUTF8String: "Błąd podczas importu"]];
-              }
-  					}
-  					purple_plugin_action_free(action);
-  				}
-  			}
-  			g_list_free(actions);
-    	}	
-  	  [[ViewController sharedInstance] transitionToBuddyListView];
-
+      _eyeCandy = [[[EyeCandy alloc] init] retain];
+      [_eyeCandy showProgressHUD:[NSString stringWithUTF8String: "Trwa import kontaktów z serwera..." ] withWindow:[_delegate getWindow] withView:[ViewController sharedInstance] withRect:CGRectMake(0.0f, 100.0f, 320.0f, 50.0f)];
+      [NSTimer scheduledTimerWithTimeInterval:0.02 target:self selector:@selector(importFromServer:) userInfo:nil repeats:NO];
       break;
     case 3:
       [self importFromFile];
@@ -234,6 +200,55 @@ static void plugin_server_import_userdata_cb (PurplePluginAction * action)
 		[[ViewController sharedInstance] transitionToLoginViewWithEditActive:YES];
 	}*/
 }
+
+-(void) importFromServerFinished:(id)param
+{
+  [_eyeCandy hideProgressHUD];
+  [[ViewController sharedInstance] showMessage: [NSString stringWithUTF8String: "" ] withTitle:[NSString stringWithUTF8String: "Import kontaktów z serwera zakończony"]];
+  [[ViewController sharedInstance] transitionToBuddyListView];
+}
+
+-(void) importFromServer:(id)param
+{
+  NSLog(@"server import");
+  //PurpleAccount
+  PurplePlugin *plugin = purple_account_get_connection(account)->prpl;
+  
+  if (PURPLE_PLUGIN_HAS_ACTIONS(plugin)) { 
+  	GList	*l, *actions;
+  	actions = PURPLE_PLUGIN_ACTIONS(plugin, purple_account_get_connection(account));
+  
+  	//Avoid adding separators between nonexistant items (i.e. items which Purple shows but we don't)
+  	BOOL	addedAnAction = NO;
+  	for (l = actions; l; l = l->next) {
+  		if (l->data) {
+  			PurplePluginAction	*action;
+  			NSDictionary		*dict;
+  			NSString			*title;
+  			action = (PurplePluginAction *) l->data;
+  			title=[NSString stringWithUTF8String:action->label];
+  			if ([title isEqualToString:@"Download buddylist from Server"]) {
+  		    NSLog(@"SLYV ACTION: %@", title);
+      		PurplePluginAction *act = purple_plugin_action_new(NULL, action->callback);
+      		if (act->callback) {
+      			act->plugin = purple_account_get_connection(account)->prpl;
+      			act->context = purple_account_get_connection(account);
+      			act->callback(act);
+      		} else {
+  			    [[ViewController sharedInstance] showMessage: [NSString stringWithUTF8String: "Spróbuj ponownie za chwilę" ] withTitle:[NSString stringWithUTF8String: "Błąd podczas importu"]];
+          }
+  			}
+  			purple_plugin_action_free(action);
+  		}
+  	}
+  	g_list_free(actions);
+  }	
+  [NSTimer scheduledTimerWithTimeInterval:5 target:self selector:@selector(importFromServerFinished:) userInfo:nil repeats:NO];
+
+}
+
+
+
 -(void) importFromFile
 {
   NSLog(@"file import 2");

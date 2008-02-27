@@ -29,6 +29,8 @@
 #import "UserManager.h"
 #import "BuddyListView.h"
 #import "ViewController.h"
+#import "EyeCandy.h" 
+
 
 @implementation LoginView
 /*
@@ -187,6 +189,17 @@
 	editing = NO;
 }
 
+-(void) loginButton:(id)param
+{
+	BOOL login_success = [[UserManager sharedInstance] loginAll];
+	[_eyeCandy hideProgressHUD];
+	if(login_success)
+		[[ViewController sharedInstance] transitionToBuddyListView];
+	else
+		[[ViewController sharedInstance] showError: 
+			@"You must have at lease one account set to active"];
+}
+
 - (void) buttonEvent:(UIPushButton *)button 
 {
 	if (![button isPressed] && [button isHighlighted])
@@ -197,20 +210,21 @@
 		}
 		else if(button == login_button)
 		{
-			BOOL login_success = [[UserManager sharedInstance] loginAll];
-
-			if(login_success)
-				[[ViewController sharedInstance] transitionToBuddyListView];
-			else
-				[[ViewController sharedInstance] showError: 
-					@"You must have at lease one account set to active"];
+    	_eyeCandy = [[[EyeCandy alloc] init] retain];
+      [_eyeCandy showProgressHUD:[NSString stringWithUTF8String: "Nawiązywanie połączenia z Internetem..." ] withWindow:[_delegate getWindow] withView:[ViewController sharedInstance] withRect:CGRectMake(0.0f, 100.0f, 320.0f, 50.0f)];
+      [NSTimer scheduledTimerWithTimeInterval:0.02 target:self selector:@selector(loginButton:) userInfo:nil repeats:NO];
 		}
 		else if(button == add_button)
 		{
 			[[ViewController sharedInstance] transitionToAccountEditView];
 		}
-        }
+  }
 }
+
+
+
+
+
 
 -(void) setIsEditing:(BOOL)is_editing
 {
