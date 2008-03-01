@@ -48,6 +48,7 @@ static id sharedInstanceViewControl;
 					aframe.size.width, aframe.size.height);
 		login_view = [[LoginView alloc] initWithFrame:aframe];
 		buddy_list_view = [[BuddyListView alloc] initWithFrame:aframe];
+		buddy_edit_view = [[BuddyEditView alloc] initWithFrame:aframe];
 
 		buddy_conversations = [[NSMutableDictionary alloc] init];
 
@@ -112,6 +113,17 @@ static id sharedInstanceViewControl;
 
 	[buddy_list_view reloadData];
 	[self transitionTo:buddy_list_view slideDirection:trans];
+}
+
+//-(void) transitionToBuddyEditView:(Buddy *) buddy
+//-(void) transitionToBuddyEditView
+-(void) transitionToBuddyEditView:(PurpleAccount *) account
+{
+	if(buddy_edit_view)
+		[buddy_edit_view release];
+	
+	buddy_edit_view = [[BuddyEditView alloc] initWithFrame:frame withAccount:account];
+	[self transitionTo:buddy_edit_view slideDirection:1];
 }
 
 -(void) forceBuddyListRefresh

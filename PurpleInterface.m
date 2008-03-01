@@ -38,6 +38,7 @@ static id sharedInstancePurple;
 {
 	if ((self == [super init]) != nil) 
 	{
+    		[UIApp addStatusBarImageNamed:@"mGaduOffline" removeOnAbnormalExit:YES];
 		user_list = [[NSMutableArray alloc] init];
 		listeners = [[NSMutableArray alloc] init];
 

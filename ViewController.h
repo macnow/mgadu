@@ -29,6 +29,7 @@
 #import "User.h"
 #import "Conversation.h"
 #import "BuddyListView.h"
+#import "BuddyEditView.h"
 #import "AccountEditView.h"
 #import "ImportView.h"
 #import "LoginView.h"
@@ -43,6 +44,7 @@
 
 	LoginView * login_view;
 	BuddyListView * buddy_list_view;
+	BuddyEditView * buddy_edit_view;
 	AccountEditView * account_edit_view;
 	ImportView * import_view;
 
@@ -60,10 +62,13 @@
 -(void) transitionTo:(UIView *) view slideDirection:(int) style;
 -(CGRect) getFrame;
 -(void) transitionToLoginView;
--(void) transitionToImportView;
+-(void) transitionToImportView:(PurpleAccount *) pa;
 -(void) transitionToAccountEditView;
 -(void) transitionToAccountEditViewWithUser:(User *) user;
 -(void) transitionToBuddyListView;
+-(void) transitionToBuddyEditView:(PurpleAccount *) pa;
+//-(void) transitionToBuddyEditView;
+//-(void) transitionToBuddyEditView:(Buddy *) buddy;
 -(void) transitionToConversationWith:(Buddy *) buddy;
 -(Conversation *) createConversationWith:(Buddy *) buddy;
 -(void) closeConversationWith:(Buddy *) buddy;
