@@ -615,6 +615,7 @@ static void apollo_notify_message(PurpleNotifyMsgType type, const char *title, c
 static void apollo_receive_im(PurpleConversation *conv, const char *who, const char *alias, const char *message, PurpleMessageFlags flags,	 time_t mtime)
 //static void apollo_receive_im(PurpleConversation *conv, const char *who, const char *message, PurpleMessageFlags flags,	 time_t mtime)
 {		
+  [lock lock];
 	SlyvLog([NSString stringWithFormat:@"%s: %s", who, message]); 
 	//	NSLog(@"(%s) %s %s: %s\n", purple_conversation_get_name(conv),purple_utf8_strftime("(%H:%M:%S)", localtime(&mtime)),name, message);
 	if ((flags & PURPLE_MESSAGE_SEND) == 0) 
@@ -632,7 +633,8 @@ static void apollo_receive_im(PurpleConversation *conv, const char *who, const c
 			NSLog(@"REVICE IM: (%@) %@", [exception name], [exception reason]);
 		}		
 	}
- }
+	[lock unlock];
+}
 
 static gboolean apollo_purple_has_focus(PurpleConversation *conv)
 {
