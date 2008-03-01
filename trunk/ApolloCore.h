@@ -34,6 +34,7 @@
   User* eyeTheAccount;
   PurpleAccount* eyeThePurpleAccount;
   EyeCandy *_eyeCandy; 
+  NSString * realstatus;
 	NSThread* mainLoopThread;
 	int	connections;
 	
@@ -83,6 +84,9 @@
 
 - (User *) getApolloUser:(PurpleAccount *) pa;
 - (PurpleAccount *) getPurpleAccount:(User *) user;
+
+- (NSString *) getRealStatus;
+- (void) setRealStatus:(NSString *) rs ; 
 
 - (void) reset;
 - (void) goTeamCancer;

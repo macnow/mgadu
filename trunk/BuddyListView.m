@@ -315,7 +315,22 @@
 		}
 		else if(button == add_button)
 		{
-			[[ViewController sharedInstance] showError: [NSString stringWithUTF8String: "Opcja będzie dostępna w następnej wersji programu" ]];
+			PurpleAccount * pa;
+  			NSArray * users = [[UserManager sharedInstance]	getUsers];
+    			int i = 0;
+    			for(i; i<[users count]; i++)
+    			{
+		    		User * u = [users objectAtIndex:i];
+    				if([u isActive])
+				{
+				          pa = [[ApolloCore sharedInstance] getPurpleAccount:u];
+				          break;
+        			}
+		  	}
+			[[ViewController sharedInstance] transitionToBuddyEditView: pa];
+			
+			//[[ViewController sharedInstance] transitionToBuddyEditView];
+			//[[ViewController sharedInstance] showError: [NSString stringWithUTF8String: "Opcja będzie dostępna w następnej wersji programu" ]];
 		}
 		else if(button == import_button)
 		{

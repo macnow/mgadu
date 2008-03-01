@@ -22,6 +22,7 @@ static id sharedInst;
 static NSRecursiveLock *lock;
 extern UIApplication *UIApp;
 
+
 // Private class just for handling account pairs
 @interface UserPair : NSObject
 {
@@ -131,6 +132,12 @@ extern UIApplication *UIApp;
 	self = [super init];
 
 	NSLog(@"ApolloCore> Initiating the ApolloCore.");
+
+	NSString * realstatus;
+	[self setRealStatus:@"mGaduOffline"];
+
+	//Zaladowane juz w PurpleInterface.m
+    	//[UIApp addStatusBarImageNamed:[self getRealStatus] removeOnAbnormalExit:YES];
 
 	//All accounts that are connected
 	activeAccounts		=	[[NSMutableDictionary alloc]init];
@@ -281,9 +288,10 @@ extern UIApplication *UIApp;
 		[connectedAccount->ap_user setStatus:ONLINE];
 		//[[PurpleInterface sharedInstance]fireEvent:[[Event alloc] initWithUser:[self getApolloUser:theAccount] type:ONLINE content:@""]];		
 		connections++;	
-    	
-
-    [UIApp addStatusBarImageNamed: @"mGadu" removeOnAbnormalExit: YES];
+	
+	[UIApp removeStatusBarImageNamed:[self getRealStatus]];
+	[self setRealStatus:@"mGadu"];
+    	[UIApp addStatusBarImageNamed:[self getRealStatus] removeOnAbnormalExit:YES];
 
     User	* user			=	[self getApolloUser:theAccount];
     PurpleAccount * pa = [self getPurpleAccount:user];
@@ -332,7 +340,9 @@ extern UIApplication *UIApp;
 		[[ViewController sharedInstance]fullDisconnect];		
 		//[theAccount removeAllBuddies];		
 	}	
-	[ UIApp removeStatusBarImageNamed: @"mGadu" ];
+	[UIApp removeStatusBarImageNamed:[self getRealStatus]];
+	[self setRealStatus:@"mGaduOffline"];
+    	[UIApp addStatusBarImageNamed:[self getRealStatus] removeOnAbnormalExit:YES];
 	[_eyeCandy hideProgressHUD];
 	
 	//Alert UI with notification -- note this needs hookup w/ the correct UI ops so you can get a reason why 
@@ -469,6 +479,10 @@ extern UIApplication *UIApp;
 		PurpleStatusType*		statusType		= purple_status_get_type(status);
 		PurplePresence*			presence		= purple_status_get_presence(status);
 	
+		
+		[UIApp removeStatusBarImageNamed:[self getRealStatus]];
+		[self setRealStatus:@"mGaduInvisible"];
+    		[UIApp addStatusBarImageNamed:[self getRealStatus] removeOnAbnormalExit: YES];
 		purple_presence_set_status_active(presence, "invisible", true);
 	}
 }
@@ -482,6 +496,9 @@ extern UIApplication *UIApp;
 		PurpleStatusType*		statusType		= purple_status_get_type(status);
 		PurplePresence*			presence		= purple_status_get_presence(status);
 	
+		[UIApp removeStatusBarImageNamed:[self getRealStatus]];
+		[self setRealStatus:@"mGaduAway"];
+    		[UIApp addStatusBarImageNamed:[self getRealStatus] removeOnAbnormalExit: YES];
 		purple_presence_set_status_active(presence, "away", true);
 	}
 }
@@ -495,7 +512,9 @@ extern UIApplication *UIApp;
 		PurpleStatusType*		statusType		= purple_status_get_type(status);
 		PurplePresence*			presence		= purple_status_get_presence(status);
 		
-
+		[UIApp removeStatusBarImageNamed:[self getRealStatus]];
+		[self setRealStatus:@"mGadu"];
+    		[UIApp addStatusBarImageNamed:[self getRealStatus] removeOnAbnormalExit: YES];
 		purple_presence_set_status_active(presence, "available", true);
 	}
 }
@@ -648,10 +667,18 @@ extern UIApplication *UIApp;
 - (void) connectionBroken
 {
 	[[ApolloCore sharedInstance] hideHUD];
-  [ UIApp removeStatusBarImageNamed: @"mGadu" ];
+  [UIApp removeStatusBarImageNamed:[self getRealStatus]];
   NSLog(@"connectionBroken, restart Springboard");
   system([[NSString stringWithFormat:@"ps -auxw | grep SpringBoard |grep -v grep | cut -c 5-12 | xargs kill -HUP"] UTF8String]);
 
+}
+- (void) setRealStatus:(NSString *) rs
+{
+	realstatus = rs;
+}
+- (NSString *) getRealStatus
+{
+	return realstatus;
 }
 
 @end
