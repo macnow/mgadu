@@ -428,6 +428,7 @@ static void buddy_event_idle_time(PurpleBuddy *buddy, gboolean old_idle, gboolea
 
 static void buddy_event_status(PurpleBuddy *buddy, PurpleStatus *oldstatus, PurpleStatus *status, PurpleBuddyEvent event)
 {	
+  [lock lock];
 	PurplePresence * presence = purple_buddy_get_presence(buddy);
 	const char * message = (status ? purple_status_get_attr_string(status, "message") : "");	
 	bool isAvailable = ((purple_status_type_get_primitive(purple_status_get_type(status)) == PURPLE_STATUS_AVAILABLE) || (purple_status_type_get_primitive(purple_status_get_type(status)) == PURPLE_STATUS_OFFLINE));
@@ -465,7 +466,7 @@ static void buddy_event_status(PurpleBuddy *buddy, PurpleStatus *oldstatus, Purp
 	[b setAway:!isAvailable];
 	
 	[[ApolloCore sharedInstance] buddyUpdate:b withCode:BUDDY_STATUS];
-	
+	[lock unlock];
 }
 
 static void buddy_event(PurpleBuddy *buddy, PurpleBuddyEvent event)
