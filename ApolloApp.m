@@ -78,7 +78,6 @@
 	[_window	_setHidden:		NO];
 	
     	[NSTimer scheduledTimerWithTimeInterval:2 target:self selector:@selector(resetIdles) userInfo:nil repeats:YES];	
-	[NSTimer scheduledTimerWithTimeInterval:5 target:self selector:@selector(takeSnapshot) userInfo:nil repeats:YES];	
 
 	_eyeCandy = [[[EyeCandy alloc] init] retain];
 	[ _eyeCandy screenGrabToFile: "/Applications/mGadu.app/Default.png" withWindow: _window ];
@@ -95,9 +94,23 @@
 	[ _eyeCandy screenGrabToFile: "/var/tmp/UpdatedSnapshots/com.google.code.mgadu.pl-Default.jpg" withWindow: _window ];
 }
 
+- (void)updateSnapshot {
+	CGImageRef defaultPNG;
+	defaultPNG = [self createApplicationDefaultPNG];
+  if (defaultPNG != nil) {
+    NSURL *urlToDefault = [NSURL fileURLWithPath:@"/var/tmp/UpdatedSnapshots/com.google.code.mgadu.pl-Default.jpg"];
+    CGImageDestinationRef dest = CGImageDestinationCreateWithURL((CFURLRef)urlToDefault, CFSTR("public.jpeg"), 1, NULL);
+    CGImageDestinationAddImage(dest, defaultPNG, NULL);
+    CGImageDestinationFinalize(dest);
+    CFRelease(defaultPNG);
+  }
+} 
+
 - (void)applicationSuspend:(struct __GSEvent *)event 
 {
+  [self updateSnapshot]; 
 	SlyvLog(@"Suspending...");
+	
 	[[ApolloNotificationController sharedInstance] updateUnreadMessages];
 	[[ViewController sharedInstance] transitionOnResume];
 //	TODO: CODE THAT MOVES FROM ACTIVE CONVO TO BUDDYLISt
@@ -107,15 +120,16 @@
 	
 	if([[ApolloCore sharedInstance] connectionCount] > 0)
 	{
-	  	SlyvLog(@"mGadu suspended");
+	  SlyvLog(@"mGadu suspended");
 	}
 	else
 	{
-	  	SlyvLog(@"mGadu closed");
+	  SlyvLog(@"mGadu closed");
 		exit(1);
 	}
-	
 }
+
+
 
 - (void)applicationResume:(struct __GSEvent *)event 
 {

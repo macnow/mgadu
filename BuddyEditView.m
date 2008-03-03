@@ -230,7 +230,21 @@
       serv_alias_buddy(purplebuddy);
       purple_blist_schedule_save();
 	} else {
-		NSLog(@"Buddy nieznaleziony");
+		NSLog(@"Buddy nieznaleziony, dodaje");
+		const char	*groupUTF8String;
+    groupUTF8String = "Buddies"; 
+    PurpleGroup	*group;
+    PurpleBuddy	*buddy; 
+    if (!(group = purple_find_group(groupUTF8String))) {
+		  group = purple_group_new(groupUTF8String);
+		  purple_blist_add_group(group, NULL);
+	  }
+    buddy = purple_buddy_new(pa, [ggnumber UTF8String], NULL); 
+    purple_blist_add_buddy(buddy, NULL, groupUTF8String, NULL);
+    purple_blist_alias_buddy(buddy,[nick UTF8String]); 
+    purple_account_add_buddy(pa, buddy);
+    purple_blist_schedule_save();
+
 	}
 }
 
