@@ -185,7 +185,19 @@
 	Buddy * b = [buddies objectAtIndex: [buddy_table selectedRow]];
 	if(editing)
 	{
-		[[ViewController sharedInstance] transitionToBuddyEditView:b];
+		PurpleAccount * pa;
+  		NSArray * users = [[UserManager sharedInstance]	getUsers];
+    		int i = 0;
+    		for(i; i<[users count]; i++)
+    		{
+	   		User * u = [users objectAtIndex:i];
+    			if([u isActive])
+			{
+			          pa = [[ApolloCore sharedInstance] getPurpleAccount:u];
+			          break;
+        		}
+	  	}
+		[[ViewController sharedInstance] transitionToBuddyEditView:b:pa];
 		NSLog(@"%@ clicked, Editing", [b getName]);
 	}
 	else
@@ -354,7 +366,7 @@
 				          break;
         			}
 		  	}
-			[[ViewController sharedInstance] transitionToBuddyAddView: pa];
+			[[ViewController sharedInstance] transitionToBuddyAddView:pa];
 		}
 		else if(button == import_button)
 		{

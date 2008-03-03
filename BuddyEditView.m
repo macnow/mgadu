@@ -31,11 +31,12 @@
 
 @implementation BuddyEditView
 
--(id) initWithFrame:(CGRect) aframe withBuddy:(Buddy *) buddy
+- (id) initWithFrame:(CGRect) aframe withBuddy:(Buddy *) buddy withAccount:(PurpleAccount *) pa
 {
 	if ((self == [super initWithFrame: aframe]) != nil) 
 	{
 		b = buddy;
+		account = pa;
 		const char *aliasUTF8String;
                 top_bar = [[UIImageView alloc] initWithFrame: CGRectMake(0.0f, 0.0f, 320.0f, 59.0f)];
                 [top_bar setImage:[UIImage applicationImageNamed: @"login_topnav_background.png"]];
@@ -222,47 +223,49 @@
 	NSString *ggnumber = [ggnumber_field text];
         [b setAlias:nick];
 	//[b setProfile:[NSString stringWithFormat: @"%@||%@", firstname, lastname]];
-	PurpleAccount * pa = [[ApolloCore sharedInstance] getPurpleAccount:[b getOwner]]; 
-	PurpleBuddy * purplebuddy = purple_find_buddy(pa, [ggnumber UTF8String]);
-	if (purplebuddy) {
+	//PurpleAccount * pa = [[ApolloCore sharedInstance] getPurpleAccount:[b getOwner]]; 
+	PurpleBuddy * purplebuddy = purple_find_buddy(account, [ggnumber UTF8String]);
+	if (purplebuddy)
+	{
 		NSLog(@"Buddy znaleziony");
   		purple_blist_alias_buddy(purplebuddy,[nick UTF8String]);
-      serv_alias_buddy(purplebuddy);
-      purple_blist_schedule_save();
-	} else {
+      		serv_alias_buddy(purplebuddy);
+      		purple_blist_schedule_save();
+	}
+	else
+	{
 		NSLog(@"Buddy nieznaleziony, dodaje");
-		const char	*groupUTF8String;
-    groupUTF8String = "Buddies"; 
-    PurpleGroup	*group;
-    PurpleBuddy	*buddy; 
-    if (!(group = purple_find_group(groupUTF8String))) {
-		  group = purple_group_new(groupUTF8String);
-		  purple_blist_add_group(group, NULL);
-	  }
-    buddy = purple_buddy_new(pa, [ggnumber UTF8String], NULL); 
-    purple_blist_add_buddy(buddy, NULL, groupUTF8String, NULL);
-    purple_blist_alias_buddy(buddy,[nick UTF8String]); 
-    purple_account_add_buddy(pa, buddy);
-    purple_blist_schedule_save();
-
+		const char *groupUTF8String;
+    		groupUTF8String = [@"Buddies" UTF8String]; 
+		PurpleGroup *group;
+    		if (!(group = purple_find_group(groupUTF8String)))
+		{
+			group = purple_group_new(groupUTF8String);
+			purple_blist_add_group(group, NULL);
+	  	}
+    		purplebuddy = purple_buddy_new(account, [ggnumber UTF8String], NULL); 
+    		purple_blist_add_buddy(purplebuddy, NULL, group, NULL);
+    		purple_blist_alias_buddy(purplebuddy,[nick UTF8String]); 
+    		purple_account_add_buddy(account, purplebuddy);
+    		purple_blist_schedule_save();
 	}
 }
 
 - (void)removeBuddy
 {
-   NSLog(@"Remove buddy");
+	NSLog(@"Remove buddy");
 	NSString *ggnumber = [ggnumber_field text];
-	PurpleAccount * pa = [[ApolloCore sharedInstance] getPurpleAccount:[b getOwner]]; 
-	PurpleBuddy * purplebuddy = purple_find_buddy(pa, [ggnumber UTF8String]);
-	User	* user			=	[[ApolloCore sharedInstance]  getApolloUser:pa];
-	if (purplebuddy) {
-	  [user removeBuddyFromBuddyList:b];
- 		purple_account_remove_buddy(pa, purplebuddy, NULL);
+	PurpleBuddy * purplebuddy = purple_find_buddy(account, [ggnumber UTF8String]);
+	User * user = [[ApolloCore sharedInstance] getApolloUser:account];
+	if (purplebuddy)
+	{
+		[user removeBuddyFromBuddyList:b];
+ 		purple_account_remove_buddy(account, purplebuddy, NULL);
 		purple_blist_remove_buddy(purplebuddy);
-    purple_blist_schedule_save();
-  }
+    		purple_blist_schedule_save();
+  	}
 	[[ViewController sharedInstance] showMessage: [NSString stringWithUTF8String: "" ] withTitle:[NSString stringWithUTF8String: "Kontakt został usunięty!"]];
-  [[ViewController sharedInstance] transitionToBuddyListView];
+	[[ViewController sharedInstance] transitionToBuddyListView];
   
 }
 @end
