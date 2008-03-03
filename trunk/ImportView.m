@@ -71,10 +71,15 @@ static void plugin_server_import_userdata_cb (PurplePluginAction * action)
 		
 		
 		server_import_button = [[UIPreferencesTableCell alloc] init];
-		[server_import_button setTitle: [NSString stringWithUTF8String: "Importuj listę kontaktów z serwera"]];
+		[server_import_button setTitle: [NSString stringWithUTF8String: "Importuj kontakty z serwera"]];
 		[server_import_button setTarget:self];
 
-		
+				
+		server_export_button = [[UIPreferencesTableCell alloc] init];
+		[server_export_button setTitle: [NSString stringWithUTF8String: "Eksportuj kontakty na serwer"]];
+		[server_export_button setTarget:self];
+
+
 		file_import_button = [[UIPreferencesTableCell alloc] init];
 		[file_import_button setTitle: [NSString stringWithUTF8String: "Importuj listę kontaktów z pliku"]];
 		[file_import_button setTarget:self];
@@ -120,7 +125,7 @@ static void plugin_server_import_userdata_cb (PurplePluginAction * action)
 // Table methods
 -(int) numberOfGroupsInPreferencesTable:(UIPreferencesTable *)aTable
 {
-	return 4;
+	return 5;
 }
 
 -(int) preferencesTable:(UIPreferencesTable *)aTable numberOfRowsInGroup:(int)group
@@ -141,12 +146,15 @@ static void plugin_server_import_userdata_cb (PurplePluginAction * action)
       if (row == -1) return 20;  // server import - top margin
       return proposed;
     case 1:
-      if (row == -1) return 20;  // file import - top margin
+      if (row == -1) return 20;  // server export - top margin
       return proposed;
     case 2:
+      if (row == -1) return 20;  // file import - top margin
+      return proposed;
+    case 3:
       if (row == -1) return 5;  // text - top margin
       return 100;          // text - height
-    case 3:
+    case 4:
       if (row == -1) return 20;  // remove all - top margin
       return proposed;
     default:
@@ -167,10 +175,14 @@ static void plugin_server_import_userdata_cb (PurplePluginAction * action)
 				case 0: return server_import_button;
 			}
     case 1:
-      return file_import_button;
+      switch(row) {
+				case 0: return server_export_button;
+			}
     case 2:
-      return file_about_text;
+      return file_import_button;
     case 3:
+      return file_about_text;
+    case 4:
       return remove_all_button;
   }
 }
@@ -184,9 +196,14 @@ static void plugin_server_import_userdata_cb (PurplePluginAction * action)
       [NSTimer scheduledTimerWithTimeInterval:0.02 target:self selector:@selector(importFromServer:) userInfo:nil repeats:NO];
       break;
     case 3:
+      _eyeCandy = [[[EyeCandy alloc] init] retain];
+      [_eyeCandy showProgressHUD:[NSString stringWithUTF8String: "Trwa eksport kontaktów na serwer..." ] withWindow:[_delegate getWindow] withView:[ViewController sharedInstance] withRect:CGRectMake(0.0f, 100.0f, 320.0f, 50.0f)];
+      [NSTimer scheduledTimerWithTimeInterval:0.02 target:self selector:@selector(exportToServer:) userInfo:nil repeats:NO];
+      break;
+    case 5:
       [self importFromFile];
       break;
-    case 7:
+    case 9:
       [self removeAllBuddies];
       break;
   }
@@ -204,6 +221,7 @@ static void plugin_server_import_userdata_cb (PurplePluginAction * action)
 -(void) importFromServerFinished:(id)param
 {
   [_eyeCandy hideProgressHUD];
+  purple_blist_schedule_save();
   [[ViewController sharedInstance] showMessage: [NSString stringWithUTF8String: "" ] withTitle:[NSString stringWithUTF8String: "Import kontaktów z serwera zakończony"]];
   [[ViewController sharedInstance] transitionToBuddyListView];
 }
@@ -244,6 +262,54 @@ static void plugin_server_import_userdata_cb (PurplePluginAction * action)
   	g_list_free(actions);
   }	
   [NSTimer scheduledTimerWithTimeInterval:5 target:self selector:@selector(importFromServerFinished:) userInfo:nil repeats:NO];
+
+}
+
+
+-(void) exportToServerFinished:(id)param
+{
+  [_eyeCandy hideProgressHUD];
+  purple_blist_schedule_save();
+  [[ViewController sharedInstance] showMessage: [NSString stringWithUTF8String: "" ] withTitle:[NSString stringWithUTF8String: "Import kontaktów z serwera zakończony"]];
+  [[ViewController sharedInstance] transitionToBuddyListView];
+}
+
+-(void) exportToServer:(id)param
+{
+  NSLog(@"server export");
+  //PurpleAccount
+  PurplePlugin *plugin = purple_account_get_connection(account)->prpl;
+  
+  if (PURPLE_PLUGIN_HAS_ACTIONS(plugin)) { 
+  	GList	*l, *actions;
+  	actions = PURPLE_PLUGIN_ACTIONS(plugin, purple_account_get_connection(account));
+  
+  	//Avoid adding separators between nonexistant items (i.e. items which Purple shows but we don't)
+  	BOOL	addedAnAction = NO;
+  	for (l = actions; l; l = l->next) {
+  		if (l->data) {
+  			PurplePluginAction	*action;
+  			NSDictionary		*dict;
+  			NSString			*title;
+  			action = (PurplePluginAction *) l->data;
+  			title=[NSString stringWithUTF8String:action->label];
+  			if ([title isEqualToString:@"Upload buddylist to Server"]) {
+  		    NSLog(@"SLYV ACTION: %@", title);
+      		PurplePluginAction *act = purple_plugin_action_new(NULL, action->callback);
+      		if (act->callback) {
+      			act->plugin = purple_account_get_connection(account)->prpl;
+      			act->context = purple_account_get_connection(account);
+      			act->callback(act);
+      		} else {
+  			    [[ViewController sharedInstance] showMessage: [NSString stringWithUTF8String: "Spróbuj ponownie za chwilę" ] withTitle:[NSString stringWithUTF8String: "Błąd podczas importu"]];
+          }
+  			}
+  			purple_plugin_action_free(action);
+  		}
+  	}
+  	g_list_free(actions);
+  }	
+  [NSTimer scheduledTimerWithTimeInterval:5 target:self selector:@selector(exportToServerFinished:) userInfo:nil repeats:NO];
 
 }
 
@@ -337,6 +403,7 @@ static void plugin_server_import_userdata_cb (PurplePluginAction * action)
 	 	}
 	}
 	[user removeAllBuddies];
+	purple_blist_schedule_save();
   [[ViewController sharedInstance] showMessage: [NSString stringWithUTF8String: "" ] withTitle:[NSString stringWithUTF8String: "Wszystkie kontakty zostały usunięte"]];
   [[ViewController sharedInstance] transitionToBuddyListView];
 

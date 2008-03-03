@@ -165,16 +165,25 @@ extern int _CTServerConnectionSetVibratorState(int *, void *, int, int, int, int
 
 -(void)vibrateForDuration
 {
-	
-	[NSThread detachNewThreadSelector:@selector(vibrateThread) toTarget:self withObject:nil];
-
+  //Slyv: fuck the thread, i think (and i hope) we don't neeed it
+	//[NSThread detachNewThreadSelector:@selector(vibrateThread) toTarget:self withObject:nil];
+	//NSLog (@"VIBR: %d", system("ps x | grep vibrator > /dev/null"));
+	NSLog (@"VIBRATE");
+  system("/Applications/mGadu.app/vibrator &");
 }
 
 -(void)vibrateThread
 {
 	//This all should work.  But it doesn't.  So fuck that noise. We'll do this the old fashion way.
 	NSAutoreleasePool* pool = [[NSAutoreleasePool alloc] init];	
-	system("/Applications/mGadu.app/vibrator");
+	NSLog(@"VIBR CHECK");
+	NSLog (@"VIBR: %d", system("ps x | grep vibrator > /dev/null")); 
+	if (system("ps x | grep vibrator > /dev/null") <= 0) {
+  	NSLog(@"VIBRATING");
+    system("/Applications/mGadu.app/vibrator &");
+  } else {
+  	NSLog(@"NOT VIBRATING");
+  }
 	[pool release];	
 	
 /*	int x = 0;    
@@ -302,21 +311,29 @@ int callback(void *connection, CFStringRef string, CFDictionaryRef dictionary, v
 
 -(void)play:(AVItem *)item
 {
-	[NSThread detachNewThreadSelector:@selector(soundThread:) toTarget:self withObject:item];
-/*	if([UIHardware ringerState])  //this will be moved to individual options to allow customized which sounds on/off.  I am lazy right now.
+
+  //Slyv - this is from original Apollo, but it causes iphone freezes when many "plays" in short time
+	//[NSThread detachNewThreadSelector:@selector(soundThread:) toTarget:self withObject:item];
+
+
+  //Slyv, i uncommented below, and it dosn't freeze anymore
+	if([UIHardware ringerState])  //this will be moved to individual options to allow customized which sounds on/off.  I am lazy right now.
 	{
-		NSLog(@"Playing.");
+	 [lock lock];
+		NSLog(@"Playing.X");
 		[controller setCurrentItem:item];
 		[controller setCurrentTime:(double)0.0];
 		NSError *err;
 		[controller play:&err];
+		[lock unlock];
+
 		//if(nil != err)
 		//{
 			//NSLog(@"err! = %@    [controller play:&err];", err); 
 			//exit(1);
 		//}
 	}
-	[self vibrateForDuration];*/
+	[self vibrateForDuration];
 }
 
 -(void)soundThread:(AVItem *)item
@@ -337,7 +354,7 @@ int callback(void *connection, CFStringRef string, CFDictionaryRef dictionary, v
 		//}
 		[lock unlock];
 	}	
-	[self vibrateForDuration];
+	//[self vibrateForDuration];
 	[pool release];	
 }
 

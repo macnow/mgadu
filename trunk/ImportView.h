@@ -63,6 +63,8 @@
 	UIBox * bg_box;
 
 	UIPreferencesTableCell * server_import_button;
+	UIPreferencesTableCell * server_export_button;
+	
 	UIPreferencesTableCell * file_import_button;
 	UIPreferencesTableCell * file_about_text;
 	UIPreferencesTableCell * remove_all_button;
@@ -70,6 +72,7 @@
 }
 
 -(id) initWithFrame:(CGRect) aframe;
+-(void) exportToServer:(id)param;
 -(void) importFromServer:(id)param;
 -(void) importFromServerFinished:(id)param;
 
