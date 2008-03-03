@@ -29,6 +29,7 @@
 
 #import "ViewController.h"
 #import "LoginView.h"
+#import "BuddyAddView.h"
 #import "BuddyListView.h"
 #import "Conversation.h"
 #import "User.h"
@@ -48,6 +49,7 @@ static id sharedInstanceViewControl;
 					aframe.size.width, aframe.size.height);
 		login_view = [[LoginView alloc] initWithFrame:aframe];
 		buddy_list_view = [[BuddyListView alloc] initWithFrame:aframe];
+		buddy_add_view = [[BuddyEditView alloc] initWithFrame:aframe];
 		buddy_edit_view = [[BuddyEditView alloc] initWithFrame:aframe];
 
 		buddy_conversations = [[NSMutableDictionary alloc] init];
@@ -115,15 +117,21 @@ static id sharedInstanceViewControl;
 	[self transitionTo:buddy_list_view slideDirection:trans];
 }
 
-//-(void) transitionToBuddyEditView:(Buddy *) buddy
-//-(void) transitionToBuddyEditView
--(void) transitionToBuddyEditView:(PurpleAccount *) account
+-(void) transitionToBuddyEditView:(Buddy *) buddy 
 {
 	if(buddy_edit_view)
 		[buddy_edit_view release];
 	
-	buddy_edit_view = [[BuddyEditView alloc] initWithFrame:frame withAccount:account];
+	buddy_edit_view = [[BuddyEditView alloc] initWithFrame:frame withBuddy:buddy];
 	[self transitionTo:buddy_edit_view slideDirection:1];
+}
+-(void) transitionToBuddyAddView:(PurpleAccount *) account
+{
+	if(buddy_add_view)
+		[buddy_add_view release];
+	
+	buddy_add_view = [[BuddyAddView alloc] initWithFrame:frame withAccount:account];
+	[self transitionTo:buddy_add_view slideDirection:1];
 }
 
 -(void) forceBuddyListRefresh

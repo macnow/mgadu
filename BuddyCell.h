@@ -53,6 +53,7 @@
 	UIImageView * idle_image_conv;
 	UIImageView * active_image_conv;
 	UIImageView * offline_image_conv;
+	UIImageView * edit_img;
 	UIImageView * buddy_icon;
 }
 

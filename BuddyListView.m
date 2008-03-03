@@ -40,6 +40,7 @@
 	UIImageView * top_bar;
 	UIImageView * bottom_bar;
 	UIPushButton * login_button;
+	UIPushButton * edit_button;
 	UIPushButton * done_button;
 	UIPushButton * add_button;
 	UITable * user_table;
@@ -79,6 +80,8 @@
 		[logout_button addTarget:self action:@selector(buttonEvent:) forEvents:255];
 		[logout_button becomeFirstResponder];
 
+
+
 		add_button = [[UIPushButton alloc] initWithTitle:@"" autosizesToFit:NO];
 		[add_button setFrame:CGRectMake((320.0 - ( 7.0 + 7.0 + 64.0 )), 7.0f, 32.0f, 32.0f)];
 		[add_button setImage:[UIImage applicationImageNamed: @"buddy_addbutton_up.png"]
@@ -88,8 +91,21 @@
 		[add_button setEnabled:YES];
 		[add_button addTarget:self action:@selector(buttonEvent:) forEvents:255];
 		
+
+
+		edit_button = [[UIPushButton alloc] initWithTitle:@"" autosizesToFit:NO];
+		[edit_button setFrame:CGRectMake((320.0 - ( 7.0 + 7.0 + 7.0 + 96.0 )), 7.0f, 32.0f, 32.0f)];
+		[edit_button setImage: [UIImage applicationImageNamed: @"buddy_editbutton_up.png"]
+					forState: 0];
+		[edit_button setImage: [UIImage applicationImageNamed: @"buddy_editbutton_down.png"]
+					forState: 1];
+		[edit_button addTarget:self action:@selector(buttonEvent:) forEvents:255];
+
+
+
+
 		import_button = [[UIPushButton alloc] initWithTitle:@"" autosizesToFit:NO];
-		[import_button setFrame:CGRectMake((320.0 - ( 7.0 + 7.0 + 7.0 + 96.0 )), 7.0f, 32.0f, 32.0f)];
+		[import_button setFrame:CGRectMake((320.0 - ( 7.0 + 7.0 + 7.0 + 7.0 + 128.0 )), 7.0f, 32.0f, 32.0f)];
 		[import_button setImage:[UIImage applicationImageNamed: @"buddies_import_up.png"]
                                         forState: 0];
 		[import_button setImage:[UIImage applicationImageNamed: @"buddies_import_down.png"]
@@ -133,6 +149,7 @@
 		[self addSubview: buddy_list];
 		[self addSubview: top_bar];
 		[self addSubview: logout_button];
+		[self addSubview: edit_button];
 		[self addSubview: add_button];
 		[self addSubview: import_button];
 		[self addSubview: status_button];
@@ -166,8 +183,16 @@
 - (void)tableRowSelected:(NSNotification *)notification
 {
 	Buddy * b = [buddies objectAtIndex: [buddy_table selectedRow]];
-	[[ViewController sharedInstance] transitionToConversationWith:b];
-	NSLog(@"%@ clicked, Transitioning", [b getName]);
+	if(editing)
+	{
+		[[ViewController sharedInstance] transitionToBuddyEditView:b];
+		NSLog(@"%@ clicked, Editing", [b getName]);
+	}
+	else
+	{
+		[[ViewController sharedInstance] transitionToConversationWith:b];
+		NSLog(@"%@ clicked, Transitioning", [b getName]);
+	}
 
 	[self refreshTable];
 }
@@ -254,8 +279,6 @@
 		}
 
 	}
-	
-	
 
 	[self refreshTable];
 }
@@ -270,6 +293,10 @@
 		{
 			BOOL success = [[UserManager sharedInstance] logoutAll];
 			[[ViewController sharedInstance] transitionToLoginView];
+		}
+		else if(button == edit_button)
+		{
+			[self setIsEditing:editing];
 		}
 		else if(button == status_button)
 		{
@@ -327,10 +354,7 @@
 				          break;
         			}
 		  	}
-			[[ViewController sharedInstance] transitionToBuddyEditView: pa];
-			
-			//[[ViewController sharedInstance] transitionToBuddyEditView];
-			//[[ViewController sharedInstance] showError: [NSString stringWithUTF8String: "Opcja będzie dostępna w następnej wersji programu" ]];
+			[[ViewController sharedInstance] transitionToBuddyAddView: pa];
 		}
 		else if(button == import_button)
 		{
@@ -351,6 +375,38 @@
 		}
 	}
 }
+-(void) setIsEditing:(BOOL)is_editing
+{
+        if(!is_editing)
+        {
+                [edit_button setImage:[UIImage applicationImageNamed: @"buddy_editbutton_down.png"] forState: 0];
+                [edit_button setImage:[UIImage applicationImageNamed: @"buddy_editbutton_up.png"] forState: 1];
+                [logout_button setEnabled:NO];
+                [import_button setEnabled:NO];
+                [add_button setEnabled:NO];
+                [status_button setEnabled:NO];
+                editing = YES;
+        }
+        else
+        {
+        	[edit_button setImage:[UIImage applicationImageNamed: @"buddy_editbutton_up.png"] forState: 0];
+       		[edit_button setImage:[UIImage applicationImageNamed: @"buddy_editbutton_down.png"] forState: 1];
+                [logout_button setEnabled:YES];
+                [import_button setEnabled:YES];
+                [add_button setEnabled:YES];
+                [status_button setEnabled:YES];
+        	editing = NO;
+                [self reloadData];
+        }
+
+	NSEnumerator * enumerator = [cells objectEnumerator];
+	NSObject * obj;
+	while ((obj = [enumerator nextObject]) != nil)
+	{
+		[obj setEditing:editing];
+	}
+}
+
 
 -(void) respondToEvent:(Event *) event
 {

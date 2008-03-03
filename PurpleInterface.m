@@ -48,8 +48,8 @@ static id sharedInstancePurple;
 		account_view = [[UIView alloc] initWithFrame: CGRectMake(0, 200, 320, 415)];
 
 		username_cell = [[UIPreferencesTextTableCell alloc] init];
-		[username_cell setTitle:@"ID Konta"];
-		[username_cell setPlaceHolderValue: [NSString stringWithUTF8String: "Twój identyfikator"]];
+		[username_cell setTitle:@"Numer GG"];
+		[username_cell setPlaceHolderValue: [NSString stringWithUTF8String: "Twój numer GG"]];
 		[username_cell setEnabled:YES];
 		username_field = [username_cell textField];
 		
@@ -300,12 +300,12 @@ static id sharedInstancePurple;
 // Table methods
 -(int) numberOfGroupsInPreferencesTable:(UIPreferencesTable *)aTable
 {
-	return 3;
+	return 2;
 }
 
 -(int) preferencesTable:(UIPreferencesTable *)aTable numberOfRowsInGroup:(int)group
 {
-	if(group == 2)
+	if(group == 1)
 		return 1;
 	return 2;
 }
@@ -339,7 +339,7 @@ static id sharedInstancePurple;
 			return password_cell;
 		}
 	}
-	else if(group == 1)
+	else if(group == 999)
 	{
 		if(row == 0)
 		{
@@ -350,7 +350,7 @@ static id sharedInstancePurple;
 			return port_cell;
 		}
 	}
-	else if(group == 2)
+	else if(group == 1)
 	{
 		return delete_button;
 	}
@@ -359,7 +359,7 @@ static id sharedInstancePurple;
 
 - (void)tableRowSelected:(NSNotification *)notification
 {
-	if([pref_table selectedRow] == 7)
+	if([pref_table selectedRow] == 4)
 	{
 		// delete the user
 		[[UserManager sharedInstance] removeUser:last_user_editing];
