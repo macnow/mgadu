@@ -27,16 +27,29 @@
 #import <UIKit/UITextView.h>
 #import <UIKit/UISwitchControl.h>
 
+#include <libpurple/internal.h>
+#include <libpurple/account.h>
+#include <libpurple/conversation.h>
+#include <libpurple/core.h>
+#include <libpurple/debug.h>
+#include <libpurple/eventloop.h>
+#include <libpurple/ft.h>
+#include <libpurple/log.h>
+#include <libpurple/notify.h>
+#include <libpurple/prefs.h>
+#include <libpurple/prpl.h>
+#include <libpurple/pounce.h>
+#include <libpurple/savedstatuses.h>
+#include <libpurple/sound.h>
+
 #import "EyeCandy.h" 
 
-@interface BuddyEditView : UIView
+@interface BuddyAddView : UIView
 {
   EyeCandy *_eyeCandy; 
 	id _delegate;
 
-  	Buddy * b;
-	const char *aliasUTF8String;
-	NSArray * profile;
+  PurpleAccount * account;
         UIImageView * top_bar;
         UIPushButton * cancel_button;
         UIPushButton * save_button;
@@ -53,7 +66,6 @@
         UITextField * phone_field;
         UITextField * mobile_field;
 
-        UIPreferencesTableCell * delete_button;
         UIPreferencesTextTableCell * pseudo_cell;
         UIPreferencesTextTableCell * firstname_cell;
         UIPreferencesTextTableCell * lastname_cell;
@@ -64,7 +76,7 @@
         UIPreferencesTextTableCell * mobile_cell;
 }
 
--(id) initWithFrame:(CGRect) aframe;
+-(id) initWithFrame:(CGRect) aframe withAccount:(PurpleAccount *) pa;
 -(void) addNewBuddy;
 
 @end

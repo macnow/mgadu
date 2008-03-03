@@ -118,6 +118,10 @@
 		[message_count setBackgroundColor: CGColorCreate(colorSpace, transparent)];
 		[message_count setColor: CGColorCreate(colorSpace, red)];
 
+                edit_img = [[UIImageView alloc] initWithFrame: CGRectMake(296, 10, 9, 19)];
+                [edit_img setImage:[UIImage applicationImageNamed: @"login_editarrow.png"]];
+                [edit_img setBackgroundColor: CGColorCreate(colorSpace, transparent)];
+
 		[self addSubview:buddy_label];
 		[self addSubview:away_message_label];
 		[self addSubview:active_image];
@@ -129,7 +133,9 @@
 		//[self addSubview:away_image_conv];
 		//[self addSubview:offline_image_conv];
 		[self addSubview:message_count];
+		[self addSubview:edit_img];
 
+		[self setEditing:false];
 //		NSLog(@"BuddyCell: Data Going to be Loaded");
 
 		[self reloadData];
@@ -143,6 +149,20 @@
 	}
 	return self;
 	
+}
+
+-(void)setEditing:(BOOL) editing
+{
+        float offset = 320.0f;
+        if(editing)
+        {
+                [edit_img setFrame:CGRectMake(296, 10, 9, 19)];
+        }
+        else
+        {
+                [edit_img setFrame:CGRectMake(300+offset, 20, 10, 20)];
+        }
+        [self needsDisplay];
 }
 
 -(void)increaseUnreadCount

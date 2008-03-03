@@ -31,6 +31,7 @@
 {
 	UIImageView * top_bar;
 	UIPushButton * logout_button;
+	UIPushButton * edit_button;
 	UIPushButton * status_button;
 	UIPushButton * add_button;
 	UIPushButton * import_button;
@@ -49,6 +50,7 @@
 	int user_count;
 
 	BOOL needs_refreshing;
+	BOOL editing;
 }
 
 -(id) initWithFrame:(CGRect) frame;

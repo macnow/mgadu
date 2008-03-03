@@ -24,19 +24,18 @@
 #import <UIKit/UISwitchControl.h>
 
 #import "ApolloCore.h"
-#import "BuddyEditView.h"
+#import "BuddyAddView.h"
 #import "ViewController.h"
 #import "PurpleInterface.h"
 #import "EyeCandy.h" 
 
-@implementation BuddyEditView
+@implementation BuddyAddView
 
--(id) initWithFrame:(CGRect) aframe withBuddy:(Buddy *) buddy
+-(id) initWithFrame:(CGRect) aframe withAccount:(PurpleAccount *) pa
 {
 	if ((self == [super initWithFrame: aframe]) != nil) 
 	{
-		b = buddy;
-		const char *aliasUTF8String;
+		account = pa;
                 top_bar = [[UIImageView alloc] initWithFrame: CGRectMake(0.0f, 0.0f, 320.0f, 59.0f)];
                 [top_bar setImage:[UIImage applicationImageNamed: @"login_topnav_background.png"]];
 
@@ -56,16 +55,12 @@
                                         forState: 1];
                 [save_button addTarget:self action:@selector(buttonEvent:) forEvents:255];
 
-		            delete_button = [[UIPreferencesTableCell alloc] init];
-                [delete_button setTitle: [NSString stringWithUTF8String: "Usuń kontakt"]];
-                [delete_button setHighlighted:YES];
-                [delete_button setTarget:self];
-
                 contact_view = [[UIView alloc] initWithFrame: CGRectMake(0, 45, 320, 415)];
 
                 ggnumber_cell = [[UIPreferencesTextTableCell alloc] init];
                 [ggnumber_cell setTitle: [NSString stringWithUTF8String: "Numer GG"]];
-                [ggnumber_cell setEnabled:NO];
+                [ggnumber_cell setEnabled:YES];
+		[[ggnumber_cell textField] setPreferredKeyboardType: 2];
                 ggnumber_field = [ggnumber_cell textField];
 
                 alias_cell = [[UIPreferencesTextTableCell alloc] init];
@@ -93,23 +88,6 @@
                 [self addSubview:cancel_button];
                 [self addSubview:save_button];
                 [self addSubview:contact_view];
-		
-		[ggnumber_field setText:[b getName]];
-		[alias_field setText:[b getDisplayName]];
-		NSLog([b getProfile]);
-		profile = [[b getProfile] componentsSeparatedByString:@"||"];
-		if([profile objectAtIndex:0] != nil )
-		{
-			[firstname_field setText:[profile objectAtIndex:0]];
-		} else {
-			[firstname_field setText:@""];
-		}
-		if([profile objectAtIndex:1] != nil )
-		{
-			[lastname_field setText:[profile objectAtIndex:1]];
-		} else {
-			[lastname_field setText:@""];
-		}	
 	}
 	return self;
 }
@@ -126,8 +104,9 @@
 		}
 		if(button == save_button)
 		{
-			[self saveBuddy];
-			[[ViewController sharedInstance] showMessage: [NSString stringWithUTF8String: "" ] withTitle:[NSString stringWithUTF8String: "Kontakt został zmieniony!"]];
+			
+			[self addNewBuddy];
+			[[ViewController sharedInstance] showMessage: [NSString stringWithUTF8String: "" ] withTitle:[NSString stringWithUTF8String: "Kontakt został dodany!"]];
 			[[ViewController sharedInstance] transitionToBuddyListView];
 		}
 	}
@@ -137,7 +116,7 @@
 // Table methods
 -(int) numberOfGroupsInPreferencesTable:(UIPreferencesTable *)aTable
 {
-        return 3;
+        return 2;
 }
 
 -(int) preferencesTable:(UIPreferencesTable *)aTable numberOfRowsInGroup:(int)group
@@ -147,10 +126,6 @@
 		return 1;
 	}
 	else if(group == 1)
-	{
-        	return 1;
-	}
-	else if(group == 2)
 	{
         	return 1;
 	}
@@ -187,69 +162,78 @@
                 {
                         return alias_cell;
                 }
-                /*else if(row == 1) 
+                else if(row == 1) 
                 {
-                        return firstname_cell;
+                        return nil;//firstname_cell;
                 }
 		else if(row == 2)
 		{
-			return lastname_cell;
-		}*/
-        }
-        else if(group == 2)
-        {
-                if(row == 0)
-                {
-                        return delete_button;
-                }
+			return nil;//lastname_cell;
+		}
         }
         return nil;
  }
 
 - (void)tableRowSelected:(NSNotification *)notification
 {
-    if([pref_table selectedRow] == 5)
-    {
-      [self removeBuddy];
-    }
-}
+/*        if([pref_table selectedRow] == 7)
+        {
+                // delete the user
 
-- (void)saveBuddy
+        }
+*/
+}
+- (void)addNewBuddy
 {
+	User * user = [[ApolloCore sharedInstance]  getApolloUser:account];
+        Buddy * theBuddy;
+        int i=0;
+
+        //create group "Buddies"
+        PurpleGroup *group;
+        PurpleBuddy *buddy;
+        const char *groupUTF8String, *buddyUTF8String, *aliasUTF8String, *firstnameUTF8String, *lastnameUTF8String;
+        groupUTF8String = "Buddies";
+        PurpleAccount * pa = [[ApolloCore sharedInstance] getPurpleAccount:user];
+        if (!(group = purple_find_group(groupUTF8String)))
+	{
+        	group = purple_group_new(groupUTF8String);
+		purple_blist_add_group(group, NULL);
+                NSLog(@"SLYV group buddies created");
+        } else {
+        	NSLog(@"SLYV group buddies already exists");
+	}
 	NSString *nick = [alias_field text];
+        NSString *ggnumber = [ggnumber_field text];
 	NSString *firstname = [firstname_field text];
 	NSString *lastname = [lastname_field text];
-	NSString *ggnumber = [ggnumber_field text];
-        [b setAlias:nick];
-	//[b setProfile:[NSString stringWithFormat: @"%@||%@", firstname, lastname]];
-	PurpleAccount * pa = [[ApolloCore sharedInstance] getPurpleAccount:[b getOwner]]; 
-	PurpleBuddy * purplebuddy = purple_find_buddy(pa, [ggnumber UTF8String]);
-	if (purplebuddy) {
-		NSLog(@"Buddy znaleziony");
-  		purple_blist_alias_buddy(purplebuddy,[nick UTF8String]);
-      serv_alias_buddy(purplebuddy);
-      purple_blist_schedule_save();
-	} else {
-		NSLog(@"Buddy nieznaleziony");
-	}
-}
+        if ([ggnumber length])
+	{
+                buddyUTF8String = [ggnumber UTF8String];
+		aliasUTF8String = [nick UTF8String];
+		firstnameUTF8String = [firstname UTF8String];
+		lastnameUTF8String = [lastname UTF8String];
+                buddy = purple_find_buddy(pa, buddyUTF8String);
+        	if (!buddy)
+		{
+        		NSLog(@"SLYV buddy CREATE1 %@ %@!!", ggnumber, nick);
+            		buddy = purple_buddy_new(pa, buddyUTF8String, NULL);
+            		purple_blist_add_buddy(buddy, NULL, group, NULL);
+                  	purple_blist_alias_buddy(buddy,aliasUTF8String);
+                  	purple_account_add_buddy(pa, buddy);
+          	} else {
+            		NSLog(@"SLYV buddy found %@  %@!!", ggnumber, nick);
+          	}
 
-- (void)removeBuddy
-{
-   NSLog(@"Remove buddy");
-	NSString *ggnumber = [ggnumber_field text];
-	PurpleAccount * pa = [[ApolloCore sharedInstance] getPurpleAccount:[b getOwner]]; 
-	PurpleBuddy * purplebuddy = purple_find_buddy(pa, [ggnumber UTF8String]);
-	User	* user			=	[[ApolloCore sharedInstance]  getApolloUser:pa];
-	if (purplebuddy) {
-	  [user removeBuddyFromBuddyList:b];
- 		purple_account_remove_buddy(pa, purplebuddy, NULL);
-		purple_blist_remove_buddy(purplebuddy);
-    purple_blist_schedule_save();
-  }
-	[[ViewController sharedInstance] showMessage: [NSString stringWithUTF8String: "" ] withTitle:[NSString stringWithUTF8String: "Kontakt został usunięty!"]];
-  [[ViewController sharedInstance] transitionToBuddyListView];
-  
+          	NSLog(@"CREATE BUDDY %@: %@",nick,ggnumber);
+          
+		theBuddy = [[Buddy alloc] initWithName:ggnumber andGroup:@"" andOwner:user];
+                [theBuddy setStatusMessage:@" "];
+                [theBuddy setOnline:NO];
+                [theBuddy setAlias:nick];
+		[theBuddy setProfile:[NSString stringWithFormat: @"%@||%@", firstname, lastname]];
+          	[user addBuddyToBuddyList: theBuddy];
+	}
 }
 @end
 

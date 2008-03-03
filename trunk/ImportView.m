@@ -270,7 +270,7 @@ static void plugin_server_import_userdata_cb (PurplePluginAction * action)
 {
   [_eyeCandy hideProgressHUD];
   purple_blist_schedule_save();
-  [[ViewController sharedInstance] showMessage: [NSString stringWithUTF8String: "" ] withTitle:[NSString stringWithUTF8String: "Import kontaktów z serwera zakończony"]];
+  [[ViewController sharedInstance] showMessage: [NSString stringWithUTF8String: "" ] withTitle:[NSString stringWithUTF8String: "Eksport kontaktów na serwer zakończony"]];
   [[ViewController sharedInstance] transitionToBuddyListView];
 }
 
@@ -301,7 +301,7 @@ static void plugin_server_import_userdata_cb (PurplePluginAction * action)
       			act->context = purple_account_get_connection(account);
       			act->callback(act);
       		} else {
-  			    [[ViewController sharedInstance] showMessage: [NSString stringWithUTF8String: "Spróbuj ponownie za chwilę" ] withTitle:[NSString stringWithUTF8String: "Błąd podczas importu"]];
+  			    [[ViewController sharedInstance] showMessage: [NSString stringWithUTF8String: "Spróbuj ponownie za chwilę" ] withTitle:[NSString stringWithUTF8String: "Błąd podczas eksportu"]];
           }
   			}
   			purple_plugin_action_free(action);
