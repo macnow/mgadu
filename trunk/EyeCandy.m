@@ -39,4 +39,21 @@
 	[progress removeFromSuperview];
 }
 
+- (void)screenGrabToFile: (NSString *) filename withWindow:(UIWindow *) _window
+{
+	CGImageRef image = [_window createSnapshotWithRect: CGRectMake(0.0f, 20.0f, 320.0f, 460.0f)];
+	CFStringRef path = CFStringCreateWithCString( nil, filename, kCFStringEncodingASCII );
+	CFURLRef url = CFURLCreateWithFileSystemPath( nil, path, kCFURLPOSIXPathStyle, 0 );
+	
+	CFStringRef type = CFStringCreateWithCString( nil, "public.png", kCFStringEncodingASCII );
+	CGImageDestinationRef dest = CGImageDestinationCreateWithURL(url, type, 1, NULL);
+	CGImageDestinationAddImage(dest, image, NULL);
+	CGImageDestinationFinalize(dest);
+	
+	CFRelease(dest);
+	CGImageRelease( image );
+	CFRelease( url );
+	CFRelease( type );
+}
+
 @end
