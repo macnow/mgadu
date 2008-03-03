@@ -117,12 +117,12 @@ static id sharedInstanceViewControl;
 	[self transitionTo:buddy_list_view slideDirection:trans];
 }
 
--(void) transitionToBuddyEditView:(Buddy *) buddy 
+-(void) transitionToBuddyEditView:(Buddy *) buddy:(PurpleAccount *) pa 
 {
 	if(buddy_edit_view)
 		[buddy_edit_view release];
 	
-	buddy_edit_view = [[BuddyEditView alloc] initWithFrame:frame withBuddy:buddy];
+	buddy_edit_view = [[BuddyEditView alloc] initWithFrame:frame withBuddy:buddy withAccount:pa];
 	[self transitionTo:buddy_edit_view slideDirection:1];
 }
 -(void) transitionToBuddyAddView:(PurpleAccount *) account

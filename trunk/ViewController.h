@@ -69,7 +69,7 @@
 -(void) transitionToAccountEditViewWithUser:(User *) user;
 -(void) transitionToBuddyListView;
 -(void) transitionToBuddyAddView:(PurpleAccount *) pa;
--(void) transitionToBuddyEditView:(Buddy *) buddy;
+-(void) transitionToBuddyEditView:(Buddy *) buddy:(PurpleAccount *) pa;
 -(void) transitionToConversationWith:(Buddy *) buddy;
 -(Conversation *) createConversationWith:(Buddy *) buddy;
 -(void) closeConversationWith:(Buddy *) buddy;

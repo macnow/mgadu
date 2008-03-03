@@ -35,7 +35,8 @@
 	id _delegate;
 
   	Buddy * b;
-	const char *aliasUTF8String;
+	PurpleAccount * account;
+  	const char *aliasUTF8String;
 	NSArray * profile;
         UIImageView * top_bar;
         UIPushButton * cancel_button;
@@ -64,7 +65,8 @@
         UIPreferencesTextTableCell * mobile_cell;
 }
 
--(id) initWithFrame:(CGRect) aframe;
--(void) addNewBuddy;
+- (id) initWithFrame:(CGRect) aframe withBuddy:(Buddy *) buddy withAccount:(PurpleAccount *) pa;
+- (void)saveBuddy;
+- (void)removeBuddy;
 
 @end

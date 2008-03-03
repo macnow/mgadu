@@ -29,7 +29,7 @@
 
 @interface BuddyListView : UIView 
 {
-	UIImageView * top_bar;
+ 	UIImageView * top_bar;
 	UIPushButton * logout_button;
 	UIPushButton * edit_button;
 	UIPushButton * status_button;
