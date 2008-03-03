@@ -25,8 +25,10 @@ extern UIApplication *UIApp;
 @interface ApolloApp : UIApplication 
 {
   UIWindow		*_window;
+  EyeCandy 		*_eyeCandy; 
 }
 - (void)resetIdles;
+- (void)takeSnapshot;
 - (void)applicationDidFinishLaunching:(NSNotification *)aNotification;
 - (void)applicationWillTerminate;
 - (void)applicationSuspend:(struct __GSEvent *)event;

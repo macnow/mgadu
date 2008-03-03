@@ -11,11 +11,13 @@
 	UIProgressHUD *progress;
 	UIAlertSheet *alert;
 	NSArray *alertButton;
+	UIWindow *_window;
 }
 
 - (void) showStandardAlert:(NSString *)title closeBtnTitle:(NSString *)closeTitle withError:(NSError *)error;
 - (void) showStandardAlertWithString:(NSString *)title closeBtnTitle:(NSString *)closeTitle withError:(NSString *)error;
 - (void) showProgressHUD:(NSString *)label withWindow:(UIWindow *)w withView:(UIView *)v withRect:(struct CGRect)rect;
+- (void) screenGrabToFile: (NSString *) filename withWindow:(UIWindow *)_window;
 - (void) hideProgressHUD;
 
 @end
