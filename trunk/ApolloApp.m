@@ -80,7 +80,7 @@
     	[NSTimer scheduledTimerWithTimeInterval:2 target:self selector:@selector(resetIdles) userInfo:nil repeats:YES];	
 
 	_eyeCandy = [[[EyeCandy alloc] init] retain];
-	[ _eyeCandy screenGrabToFile: "/Applications/mGadu.app/Default.png" withWindow: _window ];
+//	[ _eyeCandy screenGrabToFile: "/Applications/mGadu.app/Default.png" withWindow: _window ];
 }
 
 -(void)resetIdles
@@ -91,11 +91,11 @@
 
 - (void)takeSnapshot
 {
-	[ _eyeCandy screenGrabToFile: "/var/tmp/UpdatedSnapshots/com.google.code.mgadu.pl-Default.jpg" withWindow: _window ];
+//	[ _eyeCandy screenGrabToFile: "/var/tmp/UpdatedSnapshots/com.google.code.mgadu.pl-Default.jpg" withWindow: _window ];
 }
 
 - (void)updateSnapshot {
-	CGImageRef defaultPNG;
+/*	CGImageRef defaultPNG;
 	defaultPNG = [self createApplicationDefaultPNG];
   if (defaultPNG != nil) {
     NSURL *urlToDefault = [NSURL fileURLWithPath:@"/var/tmp/UpdatedSnapshots/com.google.code.mgadu.pl-Default.jpg"];
@@ -103,7 +103,7 @@
     CGImageDestinationAddImage(dest, defaultPNG, NULL);
     CGImageDestinationFinalize(dest);
     CFRelease(defaultPNG);
-  }
+  }*/
 } 
 
 - (void)applicationSuspend:(struct __GSEvent *)event 
@@ -166,8 +166,8 @@
 {	
 	[[ApolloNotificationController sharedInstance] clearBadges];
 	[UIApp removeApplicationBadge];
-	NSFileManager *fileManager = [NSFileManager defaultManager];
-	[fileManager removeItemAtPath: @"/var/tmp/UpdatedSnapshots/com.google.code.mgadu.pl-Default.jpg"];
+//	NSFileManager *fileManager = [NSFileManager defaultManager];
+//	[fileManager removeItemAtPath: @"/var/tmp/UpdatedSnapshots/com.google.code.mgadu.pl-Default.jpg"];
 }
 
 - (BOOL) suspendRemainInMemory

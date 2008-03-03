@@ -56,7 +56,7 @@
                                         forState: 1];
                 [save_button addTarget:self action:@selector(buttonEvent:) forEvents:255];
 
-		            delete_button = [[UIPreferencesTableCell alloc] init];
+	        delete_button = [[UIPreferencesTableCell alloc] init];
                 [delete_button setTitle: [NSString stringWithUTF8String: "Usuń kontakt"]];
                 [delete_button setHighlighted:YES];
                 [delete_button setTarget:self];
