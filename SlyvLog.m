@@ -15,6 +15,6 @@ static void SlyvLog(NSString *message, ...)
 	
 	[file writeData:[debugMessage dataUsingEncoding:NSUTF8StringEncoding]];
 	NSString *newline = [[NSString alloc]initWithString:@"\n"]; 
-	[file writeData:[newline dataUsingEncoding:nil]];
-	*/
+	[file writeData:[newline dataUsingEncoding:nil]];*/
+	
 }

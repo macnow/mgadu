@@ -5,7 +5,7 @@
 #import "CONST.h"
 #import "ApolloCore.h"
 #import "UserManager.h"
-#include "SlyvLog.m"
+#import "SlyvLog.m"
 
 
 //Thanks to Adium - really, you guys have been great!

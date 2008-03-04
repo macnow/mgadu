@@ -21,11 +21,14 @@
 #include "EyeCandy.h"
 
 extern UIApplication *UIApp;
+void powerCallback(void *refCon, io_service_t service, natural_t messageType, void *messageArgument); 
 
 @interface ApolloApp : UIApplication 
 {
   UIWindow		*_window;
   EyeCandy 		*_eyeCandy; 
+  io_connect_t		root_port;
+	io_object_t			notifier; 
 }
 - (void)resetIdles;
 - (void)takeSnapshot;
