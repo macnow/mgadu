@@ -10,6 +10,7 @@ LDFLAGS =      -framework Message \
           -framework CoreFoundation \
           -framework Foundation \
           -framework UIKit \
+          -framework IOKit \
           -framework LayerKit \
           -framework CoreGraphics \
           -framework CoreTelephony \
@@ -30,7 +31,7 @@ LDFLAGS =      -framework Message \
 		  -lglib-2.0 \
 		  -lgmodule-2.0 \
 		  -lxml2 \
-		  -lmsn
+		  -lmsn 
 
 #CFLAGS = -DDEBUG
 

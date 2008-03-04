@@ -20,11 +20,13 @@
 #import "ApolloApp.h"
 #import "Preferences.h"
 #import <UIKit/UIBox.h>
+#import <IOKit/pwr_mgt/IOPMLib.h>
+#import <IOKit/IOMessage.h>
 #import "LoginView.h"
 #import "BuddyListView.h"
 #import "BuddyCell.h"
 
-#include "SlyvLog.m"
+#import "SlyvLog.m"
 #include "User.h"
 #include "Buddy.h"
 
@@ -44,6 +46,14 @@
 
 - (void)applicationDidFinishLaunching:(NSNotification *)aNotification 
 {
+  //system("touch /tmp/mgadu.log"); 
+
+  IONotificationPortRef notificationPort;
+  root_port = IORegisterForSystemPower(self, &notificationPort, powerCallback, &notifier);
+  // add the notification port to the application runloop
+	CFRunLoopAddSource(CFRunLoopGetCurrent(), IONotificationPortGetRunLoopSource(notificationPort), kCFRunLoopCommonModes); 
+  
+  
 	BOOL isDir = YES; 
   
 	//it should be compatible with 1.1.2 and 1.1.3 and other firmwares
@@ -80,7 +90,7 @@
     	[NSTimer scheduledTimerWithTimeInterval:2 target:self selector:@selector(resetIdles) userInfo:nil repeats:YES];	
 
 	_eyeCandy = [[[EyeCandy alloc] init] retain];
-//	[ _eyeCandy screenGrabToFile: "/Applications/mGadu.app/Default.png" withWindow: _window ];
+	//[ _eyeCandy screenGrabToFile: "/Applications/mGadu.app/Default.png" withWindow: _window ];
 }
 
 -(void)resetIdles
@@ -89,26 +99,21 @@
 	[self resetIdleDuration:0.0f];
 }
 
-- (void)takeSnapshot
-{
-//	[ _eyeCandy screenGrabToFile: "/var/tmp/UpdatedSnapshots/com.google.code.mgadu.pl-Default.jpg" withWindow: _window ];
-}
-
 - (void)updateSnapshot {
-/*	CGImageRef defaultPNG;
+	CGImageRef defaultPNG;
 	defaultPNG = [self createApplicationDefaultPNG];
   if (defaultPNG != nil) {
-    NSURL *urlToDefault = [NSURL fileURLWithPath:@"/var/tmp/UpdatedSnapshots/com.google.code.mgadu.pl-Default.jpg"];
+    NSURL *urlToDefault = [NSURL fileURLWithPath:@"/tmp/UpdatedSnapshots/com.google.code.mgadu.pl-Default.jpg"];
     CGImageDestinationRef dest = CGImageDestinationCreateWithURL((CFURLRef)urlToDefault, CFSTR("public.jpeg"), 1, NULL);
     CGImageDestinationAddImage(dest, defaultPNG, NULL);
     CGImageDestinationFinalize(dest);
     CFRelease(defaultPNG);
-  }*/
+  }
 } 
 
 - (void)applicationSuspend:(struct __GSEvent *)event 
 {
-  [self updateSnapshot]; 
+  //[self updateSnapshot]; 
 	SlyvLog(@"Suspending...");
 	
 	[[ApolloNotificationController sharedInstance] updateUnreadMessages];
@@ -166,8 +171,8 @@
 {	
 	[[ApolloNotificationController sharedInstance] clearBadges];
 	[UIApp removeApplicationBadge];
-//	NSFileManager *fileManager = [NSFileManager defaultManager];
-//	[fileManager removeItemAtPath: @"/var/tmp/UpdatedSnapshots/com.google.code.mgadu.pl-Default.jpg"];
+	//NSFileManager *fileManager = [NSFileManager defaultManager];
+	//[fileManager removeItemAtPath: @"/tmp/UpdatedSnapshots/com.google.code.mgadu.pl-Default.jpg"];
 }
 
 - (BOOL) suspendRemainInMemory
@@ -178,4 +183,42 @@
 	return YES;
 }
 
-@end
+- (void)powerMessageReceived:(natural_t)messageType withArgument:(void *) messageArgument {
+    switch (messageType) {
+        case kIOMessageSystemWillSleep:
+			   SlyvLog(@"powerMessageReceived kIOMessageSystemWillSleep");
+          IOAllowPowerChange(root_port, (long)messageArgument); 
+			    //[(BuddyListView*)[self buddyListView] setStatusBar:@"Offline"];
+          break;
+        case kIOMessageCanSystemSleep:
+			/*
+               Idle sleep is about to kick in.
+               Applications have a chance to prevent sleep by calling IOCancelPowerChange.
+               Most applications should not prevent idle sleep.
+
+               Power Management waits up to 30 seconds for you to either allow or deny idle sleep.
+               If you don't acknowledge this power change by calling either IOAllowPowerChange
+               or IOCancelPowerChange, the system will wait 30 seconds then go to sleep.
+            */
+
+			SlyvLog(@"powerMessageReceived kIOMessageCanSystemSleep");
+			//cancel the change to prevent sleep
+			//if([self wifiKeepAliveIsSet]) {
+				IOCancelPowerChange(root_port, (long)messageArgument);
+			//}
+			//IOAllowPowerChange(root_port, (long)messageArgument);	
+            break; 
+        case kIOMessageSystemHasPoweredOn:
+            SlyvLog(@"powerMessageReceived kIOMessageSystemHasPoweredOn");
+            break;
+    }
+} 
+
+@end 
+
+
+
+void powerCallback(void *refCon, io_service_t service, natural_t messageType, void *messageArgument) {
+  SlyvLog(@"powerCallback");
+   [(ApolloApp*)refCon powerMessageReceived: messageType withArgument: messageArgument];
+} 
