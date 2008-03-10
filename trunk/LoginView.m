@@ -83,7 +83,10 @@
 										320.0f, 66.0f)];
 		[bottom_bar setImage:[UIImage applicationImageNamed: @"login_bottomnav_background.png"]];
 
-		login_button = [[UIPushButton alloc] initWithTitle:@"" autosizesToFit:NO];
+		
+    
+    
+    login_button = [[UIPushButton alloc] initWithTitle:@"" autosizesToFit:NO];
 		[login_button setFrame:CGRectMake(320.0 - 80.0, 7.0, 75.0, 32.0)];
 		[login_button setImage: [UIImage applicationImageNamed: @"login_loginbutton_up.png"]
 					forState: 0];
@@ -93,6 +96,24 @@
 					forState: 2];
 		[login_button addTarget:self action:@selector(buttonEvent:) forEvents:255];
 		[login_button becomeFirstResponder];
+
+
+
+    options_button = [[UIPushButton alloc] initWithTitle:@"" autosizesToFit:NO];
+		[options_button setFrame:CGRectMake(320.0 - 80.0 -7.0 - 80.0, 7.0, 75.0, 32.0)];
+		[options_button setImage: [UIImage applicationImageNamed: @"options_up.png"]
+					forState: 0];
+		[options_button setImage: [UIImage applicationImageNamed: @"options_down.png"]
+					forState: 1];
+		[options_button setImage: [UIImage applicationImageNamed: @"options_disabled.png"]
+					forState: 2];
+		[options_button addTarget:self action:@selector(buttonEvent:) forEvents:255];
+		[options_button becomeFirstResponder];
+
+
+
+
+
 
 		add_button = [[UIPushButton alloc] initWithFrame:CGRectMake((320.0/2.0), frame.size.height - (39.0f+10.0f), 
 											101.0, 39.0)];
@@ -136,6 +157,7 @@
 		
 		[self addSubview: bottom_bar];
 		[self addSubview: login_button];
+		[self addSubview: options_button];
 		[self addSubview: add_button];
 		[self addSubview: done_button];
 		NSLog(@"Login View Init Complete");
@@ -186,6 +208,8 @@
 	[done_button setImage:[UIImage applicationImageNamed: @"login_editbutton_down.png"]
 				forState: 1];
 	[login_button setEnabled:YES];
+	[options_button setEnabled:YES];
+	
 	editing = NO;
 }
 
@@ -214,6 +238,11 @@
       [_eyeCandy showProgressHUD:[NSString stringWithUTF8String: "Nawiązywanie połączenia z Internetem..." ] withWindow:[_delegate getWindow] withView:[ViewController sharedInstance] withRect:CGRectMake(0.0f, 100.0f, 320.0f, 50.0f)];
       [NSTimer scheduledTimerWithTimeInterval:0.02 target:self selector:@selector(loginButton:) userInfo:nil repeats:NO];
 		}
+		else if(button == options_button)
+		{
+		  NSLog(@"Transition to Prefs");
+    	[[ViewController sharedInstance] transitionToPrefsView];
+		}
 		else if(button == add_button)
 		{
 			[[ViewController sharedInstance] transitionToAccountEditView];
@@ -235,6 +264,7 @@
 		[done_button setImage:[UIImage applicationImageNamed: @"login_donebutton_down.png"]
         		     	        forState: 1];
 		[login_button setEnabled:NO];
+		[options_button setEnabled:NO];
 				
 		editing = YES;
 	}
