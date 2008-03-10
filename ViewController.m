@@ -29,6 +29,7 @@
 
 #import "ViewController.h"
 #import "LoginView.h"
+#import "PrefsView.h"
 #import "BuddyAddView.h"
 #import "BuddyListView.h"
 #import "Conversation.h"
@@ -48,6 +49,7 @@ static id sharedInstanceViewControl;
 		frame = CGRectMake(aframe.origin.x, aframe.origin.y,
 					aframe.size.width, aframe.size.height);
 		login_view = [[LoginView alloc] initWithFrame:aframe];
+		prefs_view = [[PrefsView alloc] initWithFrame:aframe];
 		buddy_list_view = [[BuddyListView alloc] initWithFrame:aframe];
 		buddy_add_view = [[BuddyEditView alloc] initWithFrame:aframe];
 		buddy_edit_view = [[BuddyEditView alloc] initWithFrame:aframe];
@@ -89,11 +91,22 @@ static id sharedInstanceViewControl;
 		trans = 2;
 	if(current_view == buddy_list_view)
 		trans = 2;
+	if(current_view == prefs_view)
+		trans = 2;
 
 	[login_view reloadData];
 	[login_view setIsEditing:!is_active];
 
 	[self transitionTo:login_view slideDirection:trans];
+}
+
+-(void) transitionToPrefsView
+{
+	int trans = 1;
+
+	//[login_view reloadData];
+
+	[self transitionTo:prefs_view slideDirection:trans];
 }
 
 -(void) transitionToBlankView

@@ -18,41 +18,38 @@
 #import <Foundation/Foundation.h>
 #import <UIKit/UIKit.h>
 #import <UIKit/UITableCell.h>
+#import <UIKit/UIPreferencesTable.h>
+#import <UIKit/UIPreferencesTextTableCell.h>
+#import <UIKit/UIPreferencesTableCell.h>
 #import <UIKit/UIImageAndTextTableCell.h>
 #import <UIKit/UIImage.h>
+#import <UIKit/UIBox.h>
 #import <UIKit/UITextView.h>
 #import <UIKit/UISwitchControl.h>
+
 #import "EyeCandy.h" 
 
-#import "User.h"
-
-@interface LoginView : UIView 
+@interface PrefsView : UIView
 {
   EyeCandy *_eyeCandy; 
 	id _delegate;
-	
-	UIImageView * top_bar;
-	UIImageView * bottom_bar;
-	UIPushButton * login_button;
-	UIPushButton * options_button;
-	
-	UIPushButton * done_button;
-	UIPushButton * add_button;
-	UITable * user_table;
-	UITextLabel * donate_label;
 
-	NSMutableArray * accounts;
-	NSMutableArray * cells;
-	CGRect frame;
+	NSArray * profile;
+        UIImageView * top_bar;
+        UIPushButton * cancel_button;
+        UIPushButton * save_button;
 
-	BOOL editing;
+        // View for adding
+        UIView * contact_view;
+        UIPreferencesTable * pref_table;
+
+        UIPreferencesTableCell * delete_button;
+        UIPreferencesTextTableCell * ggnumber_cell;
+        UISwitchControl * enable_switch;
 }
 
--(id) initWithFrame:(CGRect) frame;
+- (id) initWithFrame:(CGRect) aframe;
+- (void)saveBuddy;
+- (void)removeBuddy;
 
-- (void)tableRowSelected:(NSNotification *)notification;
-- (UIImageAndTextTableCell *)table:(UITable *)table cellForRow:(int)row column:(UITableColumn *)col;
-- (int)numberOfRowsInTable:(UITable *)table;
-- (void)reloadData;
-- (void)loginButton;
 @end

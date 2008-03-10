@@ -34,6 +34,7 @@
 #import "AccountEditView.h"
 #import "ImportView.h"
 #import "LoginView.h"
+#import "PrefsView.h"
 
 @interface ViewController : UIView
 {
@@ -44,6 +45,7 @@
 	UIAlertSheet *connectSheet;
 
 	LoginView * login_view;
+	PrefsView * prefs_view;
 	BuddyListView * buddy_list_view;
 	BuddyAddView * buddy_add_view;
 	BuddyEditView * buddy_edit_view;
