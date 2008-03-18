@@ -57,21 +57,37 @@
                                         forState: 1];
                 [save_button addTarget:self action:@selector(buttonEvent:) forEvents:255];
 
-	        delete_button = [[UIPreferencesTableCell alloc] init];
-                [delete_button setTitle: [NSString stringWithUTF8String: "Usuń kontakt"]];
-                [delete_button setHighlighted:YES];
-                [delete_button setTarget:self];
-
                 contact_view = [[UIView alloc] initWithFrame: CGRectMake(0, 45, 320, 415)];
 
-                ggnumber_cell = [[UIPreferencesTextTableCell alloc] init];
-                [ggnumber_cell setTitle: [NSString stringWithUTF8String: "Archiwum wiadomości"]];
-                [ggnumber_cell setEnabled:YES];
+                archive_cell = [[UIPreferencesTextTableCell alloc] init];
+                [archive_cell setTitle: [NSString stringWithUTF8String: "Archiwum wiadomości"]];
+                [archive_cell setEnabled:YES];
 
-                enable_switch = [[UISwitchControl alloc] initWithFrame:CGRectMake(208.0f, 10.0f, 50.0f, 58.0f)];
-            		[enable_switch setBackgroundColor: CGColorCreate(colorSpace, transparent)];
-            		//[enable_switch addTarget:self action:@selector(switchClick:) forEvents:255]; 
-                [ggnumber_cell addSubview:enable_switch];
+                archive_switch = [[UISwitchControl alloc] initWithFrame:CGRectMake(208.0f, 10.0f, 50.0f, 58.0f)];
+            		[archive_switch setBackgroundColor: CGColorCreate(colorSpace, transparent)];
+            		[archive_switch addTarget:self action:@selector(switchClick:) forEvents: 1<<6]; 
+                [archive_cell addSubview:archive_switch];
+                
+
+                sounds_cell = [[UIPreferencesTextTableCell alloc] init];
+                [sounds_cell setTitle: [NSString stringWithUTF8String: "Dźwięki"]];
+                [sounds_cell setEnabled:YES];
+
+                sounds_switch = [[UISwitchControl alloc] initWithFrame:CGRectMake(208.0f, 10.0f, 50.0f, 58.0f)];
+            		[sounds_switch setBackgroundColor: CGColorCreate(colorSpace, transparent)];
+            		[sounds_switch addTarget:self action:@selector(switchClick:) forEvents: 1<<6]; 
+                [sounds_cell addSubview:sounds_switch];
+
+
+                vibrating_cell = [[UIPreferencesTextTableCell alloc] init];
+                [vibrating_cell setTitle: [NSString stringWithUTF8String: "Wibracje"]];
+                [vibrating_cell setEnabled:YES];
+
+                vibrating_switch = [[UISwitchControl alloc] initWithFrame:CGRectMake(208.0f, 10.0f, 50.0f, 58.0f)];
+            		[vibrating_switch setBackgroundColor: CGColorCreate(colorSpace, transparent)];
+            		[vibrating_switch addTarget:self action:@selector(switchClick:) forEvents: 1<<6]; 
+                [vibrating_cell addSubview:vibrating_switch];
+
 
 
 
@@ -102,8 +118,8 @@
 		}
 		if(button == save_button)
 		{
-			[self saveBuddy];
-			[[ViewController sharedInstance] showMessage: [NSString stringWithUTF8String: "" ] withTitle:[NSString stringWithUTF8String: "To na razie nie działa!"]];
+			[self savePrefs];
+			[[ViewController sharedInstance] showMessage: [NSString stringWithUTF8String: "" ] withTitle:[NSString stringWithUTF8String: "Ustawienia zostały zapisane!"]];
 			[[ViewController sharedInstance] transitionToLoginView];
 		}
 	}
@@ -120,7 +136,7 @@
 {
 	if(group == 0)
 	{
-		return 1;
+		return 3;
 	}
 	else if(group == 1)
 	{
@@ -150,15 +166,17 @@
 
 -(UIPreferencesTextTableCell *) preferencesTable:(UIPreferencesTable *)aTable cellForRow:(int)row inGroup:(int)group
 {
-        if(group == 0)
-        {
-                if(row == 0)
-                {
-                        return ggnumber_cell;
-                }
-        }
-        return nil;
- }
+  if(group == 0)
+  {
+    if(row == 0)
+      return archive_cell;
+    else if(row == 1)
+      return sounds_cell;
+    else if(row == 2)
+      return vibrating_cell;
+  }
+  return nil;
+}
 
 - (void)tableRowSelected:(NSNotification *)notification
 {
@@ -168,26 +186,54 @@
     }
 }
 
-/*-(void) switchClick:(UISwitchControl *) sw
+-(void) switchClick:(UISwitchControl *) sw
 {	
+  /*if ([sw value]) { 
+    NSLog(@"switchClick ON");
+  } else {
+    NSLog(@"switchClick OFF");
+  }*/
 	//[user setActive: [sw value]];
-	NSLog(@"switchClick");
-} */
+} 
 
-- (void)saveBuddy
+- (void)savePrefs
 {
-	//NSString *ggnumber = [ggnumber_field text];
-	//[b setProfile:[NSString stringWithFormat: @"%@||%@", firstname, lastname]];
-	//PurpleAccount * pa = [[ApolloCore sharedInstance] getPurpleAccount:[b getOwner]]; 
+  NSLog(@"savePrefs");//archive_switch
+  if ([archive_switch value])  purple_prefs_set_bool("/purple/logging/log_ims", TRUE); 
+  else purple_prefs_set_bool("/purple/logging/log_ims", FALSE);  
+  
+  if ([sounds_switch value])  purple_prefs_set_bool("/mgadu/sounds", TRUE); 
+  else purple_prefs_set_bool("/mgadu/sounds", FALSE);  
 
-}
-
-- (void)removeBuddy
-{
-	NSLog(@"Remove buddy");
-	//NSString *ggnumber = [ggnumber_field text];
+  if ([vibrating_switch value])  purple_prefs_set_bool("/mgadu/vibrating", TRUE); 
+  else purple_prefs_set_bool("/mgadu/vibrating", FALSE);  
 
   
+}
+
+- (void)reloadData
+{
+  NSLog(@"PREFS reloadData");  
+  if (!purple_prefs_exists("/mgadu"))
+  {
+    purple_prefs_add_none("/mgadu");
+    purple_prefs_add_bool("/mgadu/sounds",YES);
+    purple_prefs_add_bool("/mgadu/vibrating",YES);
+    NSLog(@"prefs/gadu added");
+  } else {
+    NSLog(@"prefs/gadu exists");
+  }
+  
+  if (purple_prefs_get_bool("/purple/logging/log_ims")) [archive_switch setValue: YES];
+  else [archive_switch setValue: NO];
+
+  if (purple_prefs_get_bool("/mgadu/sounds")) [sounds_switch setValue: YES];
+  else [sounds_switch setValue: NO];
+
+  if (purple_prefs_get_bool("/mgadu/vibrating")) [vibrating_switch setValue: YES];
+  else [vibrating_switch setValue: NO];
+
+
 }
 @end
 

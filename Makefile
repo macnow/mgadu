@@ -6,7 +6,7 @@ CC =      arm-apple-darwin-gcc \
 		  -I./PurpleSupport/include/glib-2.0/gmodule \
 		  -I/usr/local/arm-apple-darwin/include
 LD = $(CC)
-LDFLAGS =      -framework Message \
+LDFLAGS =  -framework Message \
           -framework CoreFoundation \
           -framework Foundation \
           -framework UIKit \
@@ -18,6 +18,9 @@ LDFLAGS =      -framework Message \
           -framework CoreSurface \
           -framework Celestial \
           -framework CoreAudio \
+          -framework Message \
+        	-framework WebCore \
+        	-framework WebKit \
           -L./PurpleSupport/lib \
       	  -lobjc \
       	  -lz \
@@ -31,7 +34,7 @@ LDFLAGS =      -framework Message \
 		  -lglib-2.0 \
 		  -lgmodule-2.0 \
 		  -lxml2 \
-		  -lmsn 
+		  -lmsn  
 
 #CFLAGS = -DDEBUG
 

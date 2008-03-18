@@ -35,21 +35,25 @@
 	id _delegate;
 
 	NSArray * profile;
-        UIImageView * top_bar;
-        UIPushButton * cancel_button;
-        UIPushButton * save_button;
+  UIImageView * top_bar;
+  UIPushButton * cancel_button;
+  UIPushButton * save_button;
 
-        // View for adding
-        UIView * contact_view;
-        UIPreferencesTable * pref_table;
+  // View for adding
+  UIView * contact_view;
+  UIPreferencesTable * pref_table;
 
-        UIPreferencesTableCell * delete_button;
-        UIPreferencesTextTableCell * ggnumber_cell;
-        UISwitchControl * enable_switch;
+  UIPreferencesTableCell * delete_button;
+  UIPreferencesTextTableCell * archive_cell;
+  UIPreferencesTextTableCell * sounds_cell;
+  UIPreferencesTextTableCell * vibrating_cell;
+  UISwitchControl * archive_switch;
+  UISwitchControl * sounds_switch;
+  UISwitchControl * vibrating_switch;
 }
 
 - (id) initWithFrame:(CGRect) aframe;
-- (void)saveBuddy;
-- (void)removeBuddy;
+- (void)savePrefs;
+- (void)reloadData;
 
 @end

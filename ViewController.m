@@ -104,7 +104,7 @@ static id sharedInstanceViewControl;
 {
 	int trans = 1;
 
-	//[login_view reloadData];
+	[prefs_view reloadData];
 
 	[self transitionTo:prefs_view slideDirection:trans];
 }

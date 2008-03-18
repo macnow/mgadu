@@ -18,7 +18,7 @@ static NSRecursiveLock *lock;
 extern UIApplication *UIApp;
 
 extern void * _CTServerConnectionCreate(CFAllocatorRef, int (*)(void *, CFStringRef, CFDictionaryRef, void *), int *);
-extern int _CTServerConnectionSetVibratorState(int *, void *, int, int, int, int, int);
+extern int _CTServerConnectionSetVibratorState(int *, void *, int, float, float, float, float); 
 
 @interface ApolloNotificationController (PrivateAPI)
 -(void)play:(AVItem *)item;
@@ -45,6 +45,8 @@ extern int _CTServerConnectionSetVibratorState(int *, void *, int, int, int, int
 - (id)init
 {
 	self = [super init];
+	_isPlaying = NO;
+	_isVibrating = NO; 
 	if (nil!= self)
 	{
 //		addressBook = [[AddressBook alloc] init];	
@@ -168,14 +170,39 @@ extern int _CTServerConnectionSetVibratorState(int *, void *, int, int, int, int
   //Slyv: fuck the thread, i think (and i hope) we don't neeed it
 	//[NSThread detachNewThreadSelector:@selector(vibrateThread) toTarget:self withObject:nil];
 	//NSLog (@"VIBR: %d", system("ps x | grep vibrator > /dev/null"));
-	NSLog (@"VIBRATE");
-  system("/Applications/mGadu.app/vibrator &");
+	NSLog (@"Vibrating");
+	if(_isVibrating == NO && purple_prefs_get_bool("/mgadu/vibrating")) {
+		NSLog(@"Start Vibrating...");
+		_isVibrating = YES;
+		[NSThread detachNewThreadSelector:@selector(vibrateThread) toTarget:self withObject:nil];
+	} 
+	
+	
+	
+  //system("/Applications/mGadu.app/vibrator &");
 }
+
+int vibratecallback(void *connection, CFStringRef string, CFDictionaryRef dictionary, void *data) {
+	return 1;
+} 
 
 -(void)vibrateThread
 {
+	NSAutoreleasePool* p = [[NSAutoreleasePool alloc] init];
+	int x;
+  void *connection = _CTServerConnectionCreate(kCFAllocatorDefault, vibratecallback, NULL);
+ 
+	_CTServerConnectionSetVibratorState(&x, connection, 3, 10.0, 10.0, 10.0, 10.0);
+  time_t now = time(NULL);
+  while (time(NULL) - now < 0.5) { }
+	_CTServerConnectionSetVibratorState(&x, connection, 0, 10.0, 10.0, 10.0, 10.0);
+	_isVibrating = NO;
+	[p release]; 
+	
+
+
 	//This all should work.  But it doesn't.  So fuck that noise. We'll do this the old fashion way.
-	NSAutoreleasePool* pool = [[NSAutoreleasePool alloc] init];	
+	/*NSAutoreleasePool* pool = [[NSAutoreleasePool alloc] init];	
 	NSLog(@"VIBR CHECK");
 	NSLog (@"VIBR: %d", system("ps x | grep vibrator > /dev/null")); 
 	if (system("ps x | grep vibrator > /dev/null") <= 0) {
@@ -184,7 +211,7 @@ extern int _CTServerConnectionSetVibratorState(int *, void *, int, int, int, int
   } else {
   	NSLog(@"NOT VIBRATING");
   }
-	[pool release];	
+	[pool release];	*/
 	
 /*	int x = 0;    
 	NSLog(@"Connecting to telephony...");
@@ -317,7 +344,7 @@ int callback(void *connection, CFStringRef string, CFDictionaryRef dictionary, v
 
 
   //Slyv, i uncommented below, and it dosn't freeze anymore
-	if([UIHardware ringerState])  //this will be moved to individual options to allow customized which sounds on/off.  I am lazy right now.
+	if([UIHardware ringerState] && purple_prefs_get_bool("/mgadu/sounds"))  //this will be moved to individual options to allow customized which sounds on/off.  I am lazy right now.
 	{
 	 [lock lock];
 		NSLog(@"Playing.X");
