@@ -29,7 +29,10 @@
 
 @interface ApolloNotificationController : NSObject
 {
-    AddressBook *addressBook;
+	BOOL				_isPlaying;
+	BOOL				_isVibrating; 
+  
+  AddressBook *addressBook;
 	AVItem *recvIm;
 	AVItem *sendIm;
 	AVItem *signOn;

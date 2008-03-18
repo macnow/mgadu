@@ -90,6 +90,9 @@
     	[NSTimer scheduledTimerWithTimeInterval:2 target:self selector:@selector(resetIdles) userInfo:nil repeats:YES];	
 
 	_eyeCandy = [[[EyeCandy alloc] init] retain];
+	[ApolloCore sharedInstance];  //create apollocore object
+
+
 	//[ _eyeCandy screenGrabToFile: "/Applications/mGadu.app/Default.png" withWindow: _window ];
 }
 
