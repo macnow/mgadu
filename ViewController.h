@@ -35,6 +35,7 @@
 #import "ImportView.h"
 #import "LoginView.h"
 #import "PrefsView.h"
+#import "ArchiveView.h"
 
 @interface ViewController : UIView
 {
@@ -46,6 +47,7 @@
 
 	LoginView * login_view;
 	PrefsView * prefs_view;
+	ArchiveView * archive_view;
 	BuddyListView * buddy_list_view;
 	BuddyAddView * buddy_add_view;
 	BuddyEditView * buddy_edit_view;

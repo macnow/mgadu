@@ -30,6 +30,7 @@
 #import "ViewController.h"
 #import "LoginView.h"
 #import "PrefsView.h"
+#import "ArchiveView.h"
 #import "BuddyAddView.h"
 #import "BuddyListView.h"
 #import "Conversation.h"
@@ -50,6 +51,7 @@ static id sharedInstanceViewControl;
 					aframe.size.width, aframe.size.height);
 		login_view = [[LoginView alloc] initWithFrame:aframe];
 		prefs_view = [[PrefsView alloc] initWithFrame:aframe];
+		archive_view = [[ArchiveView alloc] initWithFrame:aframe];
 		buddy_list_view = [[BuddyListView alloc] initWithFrame:aframe];
 		buddy_add_view = [[BuddyEditView alloc] initWithFrame:aframe];
 		buddy_edit_view = [[BuddyEditView alloc] initWithFrame:aframe];
@@ -108,6 +110,20 @@ static id sharedInstanceViewControl;
 
 	[self transitionTo:prefs_view slideDirection:trans];
 }
+
+-(void) transitionToArchiveView:(Buddy *) buddy  account:(PurpleAccount *) pa
+{
+	int trans = 1;
+	if(archive_view)
+		[archive_view release];
+
+	archive_view = [[ArchiveView alloc] initWithFrame:frame withBuddy:buddy withAccount:pa];
+	//[archive_view reloadData];
+	[self transitionTo:archive_view slideDirection:trans];
+}
+
+
+
 
 -(void) transitionToBlankView
 {
@@ -192,10 +208,17 @@ static id sharedInstanceViewControl;
 
 		[buddy_conversations setObject:conv forKey:[buddy getID]];
 	}
+	
+	int trans = 1;
 
-	[self transitionTo: conv slideDirection:1];
+	if(current_view == archive_view)
+		trans = 2;
+
+	[self transitionTo: conv slideDirection:trans];
 	[conv addTimeStamp];
 }
+
+
 
 -(Conversation *) createConversationWith:(Buddy *) buddy
 {

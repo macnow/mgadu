@@ -54,6 +54,8 @@
 	UIPushButton * back_button;
 	UIPushButton * close_button;
 	UIPushButton * multi_button;
+	UIPushButton * archive_button;
+	
 	
 	bool introShown;
 

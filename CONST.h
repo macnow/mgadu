@@ -77,6 +77,7 @@ typedef enum
 
 
 
+
 typedef enum
 {
 	PURPLE_BUDDY_NONE				= 0x00, /**< No events.                    */

@@ -52,7 +52,7 @@ all:	mGadu package
 mGadu: main.o ApolloApp.o EyeCandy.o Preferences.o Buddy.o Event.o User.o LoginCell.o LoginView.o ProtocolManager.o \
 	UserManager.o BuddyCell.o BuddyListView.o BuddyAddView.o BuddyEditView.o ViewController.o AccountEditView.o AccountTypeSelector.o Conversation.o \
 	ConversationView.o SendBox.o ShellKeyboard.o ConvWrapper.o PurpleInterface.o ApolloCore.o ApolloNotificationController.o \
-  AddressBook.o sqlite3.o ImportView.o PrefsView.o
+  AddressBook.o sqlite3.o ImportView.o PrefsView.o ArchiveView.o
 			$(LD) $(LDFLAGS) -o $@ $^	./PurpleSupport/lib/libintl.a ./PurpleSupport/lib/libgnt.a ./PurpleSupport/lib/libiconv.a ./PurpleSupport/lib/libresolv.a 
 
 clean:
