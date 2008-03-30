@@ -31,9 +31,11 @@
 #import "ShellKeyboard.h"
 #import "Buddy.h"
 #import "ConversationView.h"
+#import "ArchiveView.h"
 #import "Event.h"
 #import "ViewController.h"
 #import "ApolloNotificationController.h"
+#import "ApolloCore.h"
 
 @implementation Conversation
 
@@ -165,6 +167,16 @@
 					forState: 1];
 		[close_button addTarget:self action:@selector(buttonEvent:) forEvents:255];
 									
+		archive_button = [[UIPushButton alloc] initWithTitle:@"" autosizesToFit:NO];
+		[archive_button setFrame:CGRectMake(320.0 - (32.0+5.0+75.0+5.0), 7.0, 75.0, 32.0)];
+		[archive_button setImage: [UIImage applicationImageNamed: @"archive_up.png"]
+					forState: 0];
+		[archive_button setImage: [UIImage applicationImageNamed: @"archive_down.png"]
+					forState: 1];
+		[archive_button addTarget:self action:@selector(buttonEvent:) forEvents:255];
+
+
+
 		[self addSubview: convoView];
 		[self addSubview: cell];
 		[self addSubview: keyboard];
@@ -172,6 +184,7 @@
 		[self addSubview: top_bar];
 		[self addSubview: back_button];
 		[self addSubview: close_button];
+		[self addSubview: archive_button];
 
 		[self addSubview: buddy_bar];
 		
@@ -312,6 +325,12 @@
 		{
 			//[[ViewController sharedInstance] closeConversationWith: buddy];  //SLYV it deleted buddy before i disabled fireEvents
 			[[ViewController sharedInstance] transitionToBuddyListView];
+		}
+		else if(button == archive_button)
+		{
+			//[[ViewController sharedInstance] closeConversationWith: buddy];  //SLYV it deleted buddy before i disabled fireEvents
+			PurpleAccount * pa = [[ApolloCore sharedInstance] getPurpleAccount:owner]; 
+			[[ViewController sharedInstance] transitionToArchiveView: buddy account: pa];
 		}
 	}
 }
