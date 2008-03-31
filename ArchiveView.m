@@ -46,27 +46,46 @@
 
     cancel_button = [[UIPushButton alloc] initWithTitle:@"" autosizesToFit:NO];
     [cancel_button setFrame:CGRectMake(5, 7.0, 75.0, 32.0)];
-    [cancel_button setImage: [UIImage applicationImageNamed: @"back_up.png"]
-                            forState: 0];
-    [cancel_button setImage: [UIImage applicationImageNamed: @"back_down.png"]
-                            forState: 1];
+    [cancel_button setImage: [UIImage applicationImageNamed: @"back_up.png"] forState: 0];
+    [cancel_button setImage: [UIImage applicationImageNamed: @"back_down.png"] forState: 1];
     [cancel_button addTarget:self action:@selector(buttonEvent:) forEvents:255];
 
 
-    //PurpleLog * archive=purple_account_get_log(pa, false);
-    //char * str=purple_log_read();[archive UTF8String]);
-    //int logSize=purple_log_get_size(archive);
+    last_button = [[UIPushButton alloc] initWithTitle:@"" autosizesToFit:NO];
+    [last_button setFrame:CGRectMake(320.0 - (50.0+5.0), 7.0, 50.0, 32.0)];
+    [last_button setImage: [UIImage applicationImageNamed: @"archive_last_up.png"] forState: 0];
+    [last_button setImage: [UIImage applicationImageNamed: @"archive_last_down.png"] forState: 1];
+    [last_button addTarget:self action:@selector(buttonEvent:) forEvents:255];
+   
+    next_button = [[UIPushButton alloc] initWithTitle:@"" autosizesToFit:NO];
+    [next_button setFrame:CGRectMake(320.0 - (50+5+50+5), 7.0, 50.0, 32.0)];
+    [next_button setImage: [UIImage applicationImageNamed: @"archive_next_up.png"] forState: 0];
+    [next_button setImage: [UIImage applicationImageNamed: @"archive_next_down.png"] forState: 1];
+    [next_button addTarget:self action:@selector(buttonEvent:) forEvents:255];
     
+    prev_button = [[UIPushButton alloc] initWithTitle:@"" autosizesToFit:NO];
+    [prev_button setFrame:CGRectMake(320.0 - (50+5+50+5+50+5), 7.0, 50.0, 32.0)];
+    [prev_button setImage: [UIImage applicationImageNamed: @"archive_prev_up.png"] forState: 0];
+    [prev_button setImage: [UIImage applicationImageNamed: @"archive_prev_down.png"] forState: 1];
+    [prev_button addTarget:self action:@selector(buttonEvent:) forEvents:255];
+
+    first_button = [[UIPushButton alloc] initWithTitle:@"" autosizesToFit:NO];
+    [first_button setFrame:CGRectMake(320.0 - (50+5+50+5+50+5+50+5), 7.0, 50.0, 32.0)];
+    [first_button setImage: [UIImage applicationImageNamed: @"archive_first_up.png"] forState: 0];
+    [first_button setImage: [UIImage applicationImageNamed: @"archive_first_down.png"] forState: 1];
+    [first_button addTarget:self action:@selector(buttonEvent:) forEvents:255];
+
     
     NSString *accountName=[NSString stringWithUTF8String:purple_account_get_username(pa)];
-    NSLog(@"accountName: %@",accountName);
-    
     archivePath=[NSString stringWithFormat: @"%@/logs/gadu-gadu/%@/%@", PATH, accountName, [b getName]];
     NSLog(@"archivePath: %@",archivePath);
 
+  	if(dirArray) [dirArray release];
+
   	NSFileManager* NSFm = [NSFileManager defaultManager];
   	dirArray = [NSFm directoryContentsAtPath: archivePath];
-  	//int n = [dirArray count];
+  	[dirArray retain];
+  	int n = [dirArray count];
 
   	/*NSString* filename;
   	int i;
@@ -76,30 +95,17 @@
   		NSLog(@"dirArray File: %@",filename);
   	}*/
   	curArchiveFile=[dirArray count]-1;
+ 		NSLog(@"curArchiveFile: %d",curArchiveFile);
   	
-  	NSString	*fileName = [NSString stringWithFormat: @"%@/%@", archivePath, [dirArray objectAtIndex: curArchiveFile]];
-    NSFileHandle *file = [NSFileHandle fileHandleForReadingAtPath:fileName];
-  	NSData *contentData = [file readDataToEndOfFile];
-  	NSString* contentString = [[NSString alloc] initWithData: contentData encoding: NSUTF8StringEncoding]; 
+  	NSString* contentString = [self getArchiveContent:curArchiveFile];
   	
 
-
-
-    /*NSFileManager* fm = [NSFileManager defaultManager];
-    NSDirectoryEnumerator* dirEnumerator = [fm enumeratorAtPath: archivePath];
-  	NSString* filename;
-  	while (filename = [dirEnumerator nextObject])
-  	{
-  		[dirEnumerator skipDescendents];
-      NSLog(@"enumerator File: %@",filename);
-  		
-  	}*/
-	
 	
     content_text = [[UITextView alloc] initWithFrame: CGRectMake(0, 45, 320, 415)];
 		[content_text setTextSize: 12];
 		[content_text setEditable: NO];
 		[content_text setText: contentString];
+
     //[content_text setHTML: [NSString stringWithFormat:@"<div><font color=\"blue\">Sample Buddy HTMK %@ %d<br>Second line</font></div>", [b getName], 0]];
     //[content_text setHTML: [NSString stringWithFormat:@"<div><font color=\"blue\">Sample Buddy HTMK<br>Second line %@</font></div>", [b name]]];
 		//[content_text scrollToEnd];
@@ -110,6 +116,13 @@
     //[contact_view addSubview:pref_table];
     [self addSubview:top_bar];
     [self addSubview:cancel_button];
+    [self addSubview:last_button];
+    [self addSubview:next_button];
+    [self addSubview:prev_button];
+    [self addSubview:first_button];
+
+
+
     //[self addSubview:contact_view];
     [self addSubview:content_text];
 
@@ -121,12 +134,23 @@
 - (void) buttonEvent:(UIPushButton *)button 
 {
 	NSLog(@"BUTTON");
+
+
 	if (![button isPressed] && [button isHighlighted])
-        {
+  {
 		if(button == cancel_button)
 		{
 			[[ViewController sharedInstance] transitionToConversationWith: b];
 		}
+		else {
+  		if(button == next_button) {if (curArchiveFile>0) curArchiveFile--;}
+  		else if(button == prev_button) {if (curArchiveFile<[dirArray count]-1) curArchiveFile++;}
+  		else if(button == first_button) curArchiveFile=[dirArray count]-1;
+  		else if(button == last_button) curArchiveFile=0;
+			NSString* contentString = [self getArchiveContent:curArchiveFile];
+			[content_text setText: contentString];
+  	}
+
 	}
 }
 
@@ -138,22 +162,17 @@
   NSLog(@"ARCHIVE reloadData");  
 }
 
-- (NSString*) loadArchiveFile:(NSString *) filename
+- (NSString*) getArchiveContent:(int) index
 { 
-  FILE *file;
-  char buffer[262144], buf[1024];
-  file = fopen(filename, "r");
-  if (file) {
-    buffer[0] = 0;
-    while((fgets(buf, sizeof(buf), file))!=NULL) {
-      strlcat(buffer, buf, sizeof(buffer));
-    }
-    fclose(file);
-    return [[ NSString alloc ] initWithCString: buffer];
-  } else {
-    return nil;
-  }
+  NSLog(@"getArchiveContent, index: %d", index);
+  NSString *accountName=[NSString stringWithUTF8String:purple_account_get_username(pa)];
+  archivePath=[NSString stringWithFormat: @"%@/logs/gadu-gadu/%@/%@", PATH, accountName, [b getName]];
+  NSLog(@"archivePath: %@",archivePath);
 
+  NSString	*fileName = [NSString stringWithFormat: @"%@/%@", archivePath, [dirArray objectAtIndex: index]];
+  NSFileHandle *file = [NSFileHandle fileHandleForReadingAtPath:fileName];
+	NSData *contentData = [file readDataToEndOfFile];
+  return  [[NSString alloc] initWithData: contentData encoding: NSUTF8StringEncoding];
 }
 
 

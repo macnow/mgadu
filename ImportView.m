@@ -245,6 +245,7 @@ static void plugin_server_import_userdata_cb (PurplePluginAction * action)
   			NSString			*title;
   			action = (PurplePluginAction *) l->data;
   			title=[NSString stringWithUTF8String:action->label];
+  			//NSLog(@"SLYV ACTION TITLE: %@", title);
   			if ([title isEqualToString:@"Download buddylist from Server"]) {
   		    NSLog(@"SLYV ACTION: %@", title);
       		PurplePluginAction *act = purple_plugin_action_new(NULL, action->callback);

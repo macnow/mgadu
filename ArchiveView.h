@@ -57,6 +57,12 @@
 	NSArray * profile;
   UIImageView * top_bar;
   UIPushButton * cancel_button;
+  UIPushButton * last_button;
+  UIPushButton * next_button;
+  UIPushButton * prev_button;
+  UIPushButton * first_button;
+
+
   UITextView * content_text; 
   NSString *archivePath;
   NSArray *dirArray;
@@ -64,7 +70,7 @@
 
 }
 
-- (NSString*) loadArchiveFile:(NSString *) filename;
+- (NSString*) getArchiveContent:(int) index;
 - (id) initWithFrame:(CGRect) aframe;
 - (void)reloadData;
 
