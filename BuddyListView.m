@@ -312,45 +312,19 @@
 		}
 		else if(button == status_button)
 		{
-			if(is_away)
-			{
-				[status_button setImage:[UIImage 
-					applicationImageNamed: @"buddy_onlinebutton_up.png"]
-                                        forState: 0];
-				[status_button setImage:[UIImage 
-					applicationImageNamed: @"buddy_onlinebutton_down.png"]
-                                        forState: 1];
-				is_away = NO;
-			}
-			else if(is_invisible)
-			{
-				[status_button setImage:[UIImage 
-					applicationImageNamed: @"buddy_awaybutton_up.png"]
-                                        forState: 0];
-				[status_button setImage:[UIImage 
-					applicationImageNamed: @"buddy_awaybutton_down.png"]
-                                        forState: 1];
-				is_away = YES;
-				is_invisible = NO;
-			}
-			else
-			{
-				[status_button setImage:[UIImage 
-					applicationImageNamed: @"buddy_invisiblebutton_up.png"]
-                                        forState: 0];
-				[status_button setImage:[UIImage 
-					applicationImageNamed: @"buddy_invisiblebutton_down.png"]
-                                        forState: 1];
-				is_invisible = YES;
-			}
-      			
-			NSArray * users = [[UserManager sharedInstance] getUsers];
-			int i = 0;
-			for(i; i<[users count]; i++)
-			{
-				[[users objectAtIndex:i] setAway: is_away];
-				[[users objectAtIndex:i] setInvisible: is_invisible];
-			}
+			PurpleAccount * pa;
+                        NSArray * users = [[UserManager sharedInstance] getUsers];
+                        int i = 0;
+                        for(i; i<[users count]; i++)
+                        {
+                                User * u = [users objectAtIndex:i];
+                                if([u isActive])
+                                {
+                                          pa = [[ApolloCore sharedInstance] getPurpleAccount:u];
+                                          break;
+                                }
+                        }
+                        [[ViewController sharedInstance] transitionToBuddyStatusView:pa];
 		}
 		else if(button == add_button)
 		{

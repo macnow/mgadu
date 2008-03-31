@@ -1,5 +1,5 @@
 /*
- By Adam Bellmore
+ By Maciej Nowakowski
 
  This program is free software; you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by
@@ -66,6 +66,7 @@
 }
 
 - (id) initWithFrame:(CGRect) aframe withBuddy:(Buddy *) buddy withAccount:(PurpleAccount *) pa;
+- (void)tableRowSelected:(NSNotification *)notification;
 - (void)saveBuddy;
 - (void)removeBuddy;
 
