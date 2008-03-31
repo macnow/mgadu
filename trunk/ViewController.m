@@ -33,6 +33,8 @@
 #import "ArchiveView.h"
 #import "BuddyAddView.h"
 #import "BuddyListView.h"
+#import "BuddyEditView.h"
+#import "BuddyStatusView.h"
 #import "Conversation.h"
 #import "User.h"
 #import "ApolloCore.h"
@@ -161,6 +163,14 @@ static id sharedInstanceViewControl;
 	
 	buddy_add_view = [[BuddyAddView alloc] initWithFrame:frame withAccount:account];
 	[self transitionTo:buddy_add_view slideDirection:1];
+}
+-(void) transitionToBuddyStatusView:(PurpleAccount *) account
+{
+	if(buddy_status_view)
+		[buddy_status_view release];
+	
+	buddy_status_view = [[BuddyStatusView alloc] initWithFrame:frame withAccount:account];
+	[self transitionTo:buddy_status_view slideDirection:1];
 }
 
 -(void) forceBuddyListRefresh

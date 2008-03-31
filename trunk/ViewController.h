@@ -31,6 +31,7 @@
 #import "BuddyListView.h"
 #import "BuddyAddView.h"
 #import "BuddyEditView.h"
+#import "BuddyStatusView.h"
 #import "AccountEditView.h"
 #import "ImportView.h"
 #import "LoginView.h"
@@ -51,6 +52,7 @@
 	BuddyListView * buddy_list_view;
 	BuddyAddView * buddy_add_view;
 	BuddyEditView * buddy_edit_view;
+	BuddyStatusView * buddy_status_view;
 	AccountEditView * account_edit_view;
 	ImportView * import_view;
 
