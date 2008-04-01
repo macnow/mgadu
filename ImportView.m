@@ -56,6 +56,11 @@ static void plugin_server_import_userdata_cb (PurplePluginAction * action)
 	if ((self == [super initWithFrame: aframe]) != nil) 
 	{
 	  account=pa;
+		pref_table = [[UIPreferencesTable alloc] initWithFrame:CGRectMake(0.0f, 45.0f, 320.0f, 415.0f)];
+		[pref_table setDataSource:self];
+		[pref_table setDelegate:self];
+
+
 		bg_box = [[UIBox alloc] initWithFrame:aframe];
 
 		top_bar = [[UIImageView alloc] initWithFrame: CGRectMake(0.0f, 0.0f, 320.0f, 59.0f)];
@@ -94,9 +99,6 @@ static void plugin_server_import_userdata_cb (PurplePluginAction * action)
 		[remove_all_button setTarget:self];
 
 
-		pref_table = [[UIPreferencesTable alloc] initWithFrame:CGRectMake(0.0f, 45.0f, 320.0f, 415.0f)];
-		[pref_table setDataSource:self];
-		[pref_table setDelegate:self];
 		[pref_table reloadData];
     
     //[self addSubview:server_import_button];
