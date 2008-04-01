@@ -464,8 +464,9 @@ extern UIApplication *UIApp;
 			purple_account_set_enabled(account, UI_ID, NO);	
 			[theAccount setStatus:OFFLINE];
 			NSLog(@"ApolloCore> Disconnecting...");
+			
 	
-			[theAccount removeAllBuddies];
+			//[theAccount removeAllBuddies];
 		}
 	}
 }
@@ -482,8 +483,20 @@ extern UIApplication *UIApp;
 		
 		[UIApp removeStatusBarImageNamed:[self getRealStatus]];
 		[self setRealStatus:@"mGaduInvisible"];
-    		[UIApp addStatusBarImageNamed:[self getRealStatus] removeOnAbnormalExit: YES];
+    [UIApp addStatusBarImageNamed:[self getRealStatus] removeOnAbnormalExit: YES];
 		purple_presence_set_status_active(presence, "invisible", true);
+		
+    purple_status_set_attr_string(status, "message", [[theAccount getStatusMessage] UTF8String]);
+  	PurplePlugin *gg_plugin = purple_find_prpl("prpl-gg"); 
+   	PurplePluginProtocolInfo*    _prpl_info= PURPLE_PLUGIN_PROTOCOL_INFO(gg_plugin); 
+   	_prpl_info->set_status(account, status); 
+
+  	//_status = purple_savedstatus_new(NULL, PURPLE_STATUS_AVAILABLE);
+  
+  	//purple_status_type_get_id(purple_account_get_status_type_with_primitive(account, PURPLE_STATUS_OFFLINE));
+		purple_account_set_enabled(account, UI_ID, YES);	
+		//[theAccount setStatus:ONLINE];
+			
 	}
 }
 
@@ -500,6 +513,15 @@ extern UIApplication *UIApp;
 		[self setRealStatus:@"mGaduAway"];
     		[UIApp addStatusBarImageNamed:[self getRealStatus] removeOnAbnormalExit: YES];
 		purple_presence_set_status_active(presence, "away", true);
+		
+    purple_status_set_attr_string(status, "message", [[theAccount getStatusMessage] UTF8String]);
+  	PurplePlugin *gg_plugin = purple_find_prpl("prpl-gg"); 
+   	PurplePluginProtocolInfo*    _prpl_info= PURPLE_PLUGIN_PROTOCOL_INFO(gg_plugin); 
+   	_prpl_info->set_status(account, status); 
+
+  	//purple_status_type_get_id(purple_account_get_status_type_with_primitive(account, PURPLE_STATUS_OFFLINE));
+		purple_account_set_enabled(account, UI_ID, YES);	
+		//[theAccount setStatus:ONLINE];
 	}
 }
 
@@ -516,6 +538,15 @@ extern UIApplication *UIApp;
 		[self setRealStatus:@"mGadu"];
     		[UIApp addStatusBarImageNamed:[self getRealStatus] removeOnAbnormalExit: YES];
 		purple_presence_set_status_active(presence, "available", true);
+		
+    purple_status_set_attr_string(status, "message", [[theAccount getStatusMessage] UTF8String]);
+  	PurplePlugin *gg_plugin = purple_find_prpl("prpl-gg"); 
+   	PurplePluginProtocolInfo*    _prpl_info= PURPLE_PLUGIN_PROTOCOL_INFO(gg_plugin); 
+   	_prpl_info->set_status(account, status); 
+
+  	//purple_status_type_get_id(purple_account_get_status_type_with_primitive(account, PURPLE_STATUS_OFFLINE));
+		purple_account_set_enabled(account, UI_ID, YES);	
+		//[theAccount setStatus:ONLINE];
 	}
 }
 
