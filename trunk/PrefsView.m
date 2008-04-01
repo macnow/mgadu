@@ -38,6 +38,10 @@
 		float transparent[4] = {0.0, 0.0, 0.0, 0.0};
 		CGColorSpaceRef colorSpace = CGColorSpaceCreateDeviceRGB();
 
+                pref_table = [[UIPreferencesTable alloc] initWithFrame:CGRectMake(0.0f, 0.0f, 320.0f, 415.0f)];
+                [pref_table setDataSource:self];
+                [pref_table setDelegate:self];
+
                 top_bar = [[UIImageView alloc] initWithFrame: CGRectMake(0.0f, 0.0f, 320.0f, 59.0f)];
                 [top_bar setImage:[UIImage applicationImageNamed: @"login_topnav_background.png"]];
 
@@ -91,9 +95,6 @@
 
 
 
-                pref_table = [[UIPreferencesTable alloc] initWithFrame:CGRectMake(0.0f, 0.0f, 320.0f, 415.0f)];
-                [pref_table setDataSource:self];
-                [pref_table setDelegate:self];
                 [pref_table reloadData];
 
                 [contact_view addSubview:pref_table];

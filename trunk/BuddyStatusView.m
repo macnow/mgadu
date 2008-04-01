@@ -38,6 +38,11 @@
 		account = pa;
 		user = [[ApolloCore sharedInstance]  getApolloUser:account];
 
+                pref_table = [[UIPreferencesTable alloc] initWithFrame:CGRectMake(0.0f, 0.0f, 320.0f, 415.0f)];
+                [pref_table setDataSource:self];
+                [pref_table setDelegate:self];
+
+
                 top_bar = [[UIImageView alloc] initWithFrame: CGRectMake(0.0f, 0.0f, 320.0f, 59.0f)];
                 [top_bar setImage:[UIImage applicationImageNamed: @"login_topnav_background.png"]];
 
@@ -82,9 +87,6 @@
                 [status_cell setEnabled:YES];
                 status_field = [status_cell textField];
 
-                pref_table = [[UIPreferencesTable alloc] initWithFrame:CGRectMake(0.0f, 0.0f, 320.0f, 415.0f)];
-                [pref_table setDataSource:self];
-                [pref_table setDelegate:self];
                 [pref_table reloadData];
 
 		//[status_field setText:[[user getStatusMessage] UTF8String]];
