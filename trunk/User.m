@@ -114,11 +114,17 @@ int buddy_compare(id left, id right, void * context)
 }
 
 
+-(void) performUpdate
+{
+	[protocol_interface performUserUpdate:self];
+}
+
 
 // Setters
 -(void) setStatusMessage:(NSString *) astatus
 {
-	status_message = astatus;
+  NSLog(@"setStatusMessage: %@", astatus);
+	status_message = [astatus copy];
 	[protocol_interface performUserUpdate:self];
 }
 

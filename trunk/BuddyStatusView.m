@@ -42,10 +42,10 @@
                 [top_bar setImage:[UIImage applicationImageNamed: @"login_topnav_background.png"]];
 
                 cancel_button = [[UIPushButton alloc] initWithTitle:@"" autosizesToFit:NO];
-                [cancel_button setFrame:CGRectMake(5, 7.0, 59.0, 32.0)];
-                [cancel_button setImage: [UIImage applicationImageNamed: @"login_addcancelbutton_up.png"]
+                [cancel_button setFrame:CGRectMake(5, 7.0, 75.0, 32.0)];
+                [cancel_button setImage: [UIImage applicationImageNamed: @"back_up.png"]
                                         forState: 0];
-                [cancel_button setImage: [UIImage applicationImageNamed: @"login_addcancelbutton_down.png"]
+                [cancel_button setImage: [UIImage applicationImageNamed: @"back_down.png"]
                                         forState: 1];
                 [cancel_button addTarget:self action:@selector(buttonEvent:) forEvents:255];
 
@@ -68,8 +68,17 @@
                 [invisible_cell setTitle: [NSString stringWithUTF8String: "Niewidoczny"]];
                 [invisible_cell setImage: [UIImage applicationImageNamed: @"status_invisible.png"]];
 
+
+    PurpleStatus* status = purple_account_get_active_status(account);
+    NSString* statusmsg = @"Wpisz opis do statusu";	
+    const char* msg = purple_status_get_attr_string(status, "message");
+		if(msg != NULL) {
+			statusmsg = [NSString stringWithUTF8String: msg];
+		}
+		
+        
                 status_cell = [[UIPreferencesTextTableCell alloc] init];
-		[status_cell setPlaceHolderValue: [NSString stringWithUTF8String: "Opis..."]];
+		[status_cell setPlaceHolderValue: statusmsg];
                 [status_cell setEnabled:YES];
                 status_field = [status_cell textField];
 
@@ -181,26 +190,28 @@
     {
 	[user setInvisible:NO];
 	[user setAway:NO];
+	[user performUpdate];
+	[[ViewController sharedInstance] transitionToBuddyListView];
     }
     else if([pref_table selectedRow] == 2)
     {
 	[user setInvisible:NO];
 	[user setAway:YES];
+	[user performUpdate];
+	[[ViewController sharedInstance] transitionToBuddyListView];
     }
     else if([pref_table selectedRow] == 3)
     {
 	[user setAway:NO];
 	[user setInvisible:YES];
+	[user performUpdate];
+	[[ViewController sharedInstance] transitionToBuddyListView];
     }
     else if([pref_table selectedRow] == 7)
     {
-	NSLog(@"Zmiana statusu opisowego na %@",[status_field text]);
-	PurpleStatus* status = purple_account_get_active_status(account);
-        purple_status_set_attr_string(status, "message", [[status_field text] UTF8String]);
-    	PurplePlugin *gg_plugin = purple_find_prpl("prpl-gg"); 
-    	PurplePluginProtocolInfo*    _prpl_info= PURPLE_PLUGIN_PROTOCOL_INFO(gg_plugin); 
-    	_prpl_info->set_status(account, status); 
-	[[ViewController sharedInstance] showMessage: [NSString stringWithUTF8String: "" ] withTitle:[NSString stringWithUTF8String: "Opis został ustawiony!"]];
+ 	[user setStatusMessage:[status_field text]];
+
+	//[[ViewController sharedInstance] showMessage: [NSString stringWithUTF8String: "" ] withTitle:[NSString stringWithUTF8String: "Opis został ustawiony!"]];
 	[[ViewController sharedInstance] transitionToBuddyListView];
     }
 }
