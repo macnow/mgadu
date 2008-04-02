@@ -821,7 +821,7 @@ static void init_libpurple()
 	purple_prefs_load();
 	//purple_plugins_load_saved("/Applications/mGadu.app/Plugins/");
 	purple_pounces_load();
-	
+	purple_prefs_set_bool("/purple/savedstatus/isidleaway", FALSE);//mgadu hangs if isidleaway is enabled
 	purple_prefs_set_bool("/purple/away/away_when_idle", FALSE);
 	
 	GList *cur; 
