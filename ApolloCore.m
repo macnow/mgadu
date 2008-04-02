@@ -274,11 +274,9 @@ extern UIApplication *UIApp;
 	}
 	else
 	{
-			//PurpleAccount*			account			= ((UserPair *)[activeAccounts objectForKey:[theAccount getID]])->purp_user;
-		//PurpleStatus*			status			= purple_account_get_active_status(theAccount);
-		//PurpleStatusType*		statusType		= purple_status_get_type(status);
-		//PurplePresence*			presence		= purple_status_get_presence(status);
-		//purple_presence_set_status_active(presence, "away", true);
+		PurpleStatus*			status			= purple_account_get_active_status(theAccount);
+		PurpleStatusType*		statusType		= purple_status_get_type(status);
+		PurplePresence*			presence		= purple_status_get_presence(status);
 
 
 		NSLog(@"Connection Successful.... setting active, removing pending status -- %@", [NSString stringWithCString:theAccount->username]);
@@ -291,6 +289,9 @@ extern UIApplication *UIApp;
 	
 	[UIApp removeStatusBarImageNamed:[self getRealStatus]];
 	[self setRealStatus:@"mGadu"];
+	if (purple_status_type_get_primitive(purple_status_get_type(status)) == PURPLE_STATUS_AVAILABLE) [self setRealStatus:@"mGadu"];
+	else if (purple_status_type_get_primitive(purple_status_get_type(status)) == PURPLE_STATUS_AWAY) [self setRealStatus:@"mGaduAway"];
+	else if (purple_status_type_get_primitive(purple_status_get_type(status)) == PURPLE_STATUS_INVISIBLE) [self setRealStatus:@"mGaduInvisible"];
     	[UIApp addStatusBarImageNamed:[self getRealStatus] removeOnAbnormalExit:YES];
 
     User	* user			=	[self getApolloUser:theAccount];
