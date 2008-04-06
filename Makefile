@@ -66,9 +66,8 @@ package:
 #	cp ./Plugins/ssl.so ./mGadu.app/Plugins/
 	cp ./PurpleSupport/hosts ./mGadu.app/
 	cp resources/*.plist ./mGadu.app/
-	cp resources/vibrator ./mGadu.app/
-	cp resources/images/* ./mGadu.app/
-	cp resources/sounds/* ./mGadu.app/
+	cp resources/images/*.png ./mGadu.app/
+	cp resources/sounds/* ./Media/
 #	chmod 755 ./mGadu.app/Apollo
 #	chmod 755 ./mGadu.app/vibrator
 

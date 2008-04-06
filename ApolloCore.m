@@ -13,6 +13,7 @@
 #import "NetworkController.h"
 #import "PurpleInterface.h"
 #import "ViewController.h"
+#import "ApolloNotificationController.h"
 #import "EyeCandy.h" 
 
 #define USER_ID(purp_user) 		[NSString stringWithFormat:@"%@/%@", [[NSString stringWithCString:(purp_user->username)]lowercaseString], [ProtocolConvert apolloProto:[NSString stringWithCString:((purp_user->protocol_id)?(purp_user->protocol_id):"")]]]
@@ -303,6 +304,7 @@ extern UIApplication *UIApp;
 	}		
 	[[ViewController sharedInstance] forceBuddyListRefresh];
 	[_eyeCandy hideProgressHUD]; 
+	[[ApolloNotificationController sharedInstance]playSignon]; 
 	
 	//Alert UI with notification
 	//TODO
@@ -345,7 +347,8 @@ extern UIApplication *UIApp;
 	[self setRealStatus:@"mGaduOffline"];
     	[UIApp addStatusBarImageNamed:[self getRealStatus] removeOnAbnormalExit:YES];
 	[_eyeCandy hideProgressHUD];
-	
+	[[ApolloNotificationController sharedInstance]playSignOff]; 
+
 	//Alert UI with notification -- note this needs hookup w/ the correct UI ops so you can get a reason why 
 	//we were disconnected.  This isn't so bad though, look throw ApolloIM-Callbacks.m.  
 	// TODO
