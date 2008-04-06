@@ -1,4 +1,5 @@
 #import "ApolloNotificationController.h"
+#import "ApolloCore.h"
 #import <UIKit/UIKit.h>
 #import <Celestial/AVController.h>
 #import <Celestial/AVQueue.h>
@@ -309,8 +310,15 @@ int callback(void *connection, CFStringRef string, CFDictionaryRef dictionary, v
 	if(totalUnreadMessages == 0)
 	{
 		[UIApp removeApplicationBadge];
+        	[UIApp removeStatusBarImageNamed:@"mGaduMsg"];
+        	[UIApp removeStatusBarImageNamed:[[ApolloCore sharedInstance] getRealStatus]];
+        	[UIApp addStatusBarImageNamed:[[ApolloCore sharedInstance] getRealStatus] removeOnAbnormalExit:YES];
 		NSLog(@"Clearing badge...");
-	}	
+	} else {	
+        	[UIApp removeStatusBarImageNamed:[[ApolloCore sharedInstance] getRealStatus]];
+        	[UIApp removeStatusBarImageNamed:@"mGaduMsg"];
+	        [UIApp addStatusBarImageNamed:@"mGaduMsg" removeOnAbnormalExit:YES];
+	}
 }
 
 -(void)switchToConvoWithMsgs:(int)msgCount
