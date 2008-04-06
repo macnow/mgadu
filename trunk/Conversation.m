@@ -248,9 +248,9 @@
  			[[ViewController sharedInstance] forceBuddyListRefresh];
 
 			[[ApolloNotificationController sharedInstance]receiveUnreadMessages:1];		
-			[[ApolloNotificationController sharedInstance]playRecvIm];
 		}
 			
+		[[ApolloNotificationController sharedInstance]playRecvIm];
 		is_empty = NO;
 		[convoView appendToConversation:msg fromUser:buddy];
 	}	
@@ -264,6 +264,7 @@
 			[owner sendMessage:[sendField text] toBuddy:buddy];
 			[sendField setText:@""];
 			is_empty = NO;
+			[[ApolloNotificationController sharedInstance]playSendIm];
 		}
 	}
 	

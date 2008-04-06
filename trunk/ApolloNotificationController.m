@@ -8,6 +8,7 @@
 #include <CoreFoundation/CoreFoundation.h>
 #include <stdio.h>
 #include <time.h>
+#import "CONST.h"
 //Special thankyou to Jonathan Saggau, nice code mate.
 
 //From Aaron hillegass
@@ -58,8 +59,9 @@ extern int _CTServerConnectionSetVibratorState(int *, void *, int, float, float,
 		totalUnreadMessages = 0;
 		
 		//Sound declarations
-//		NSString *path = [[NSBundle mainBundle] pathForResource:@"ApolloRecv" ofType:@"wav" inDirectory:@"/"];
-		NSString *path = [[NSBundle mainBundle] pathForResource:@"ApolloRecv" ofType:@"aiff" inDirectory:@"/"];
+		NSString *path = [NSString stringWithFormat: @"%@/ApolloRecv.wav", PATH_MEDIA];
+		//NSLog (@"pathMedia: %@", pathMedia);
+		NSLog (@"wav path: %@", path);
 		recvIm = [[AVItem alloc] initWithPath:path error:&err];
 		if (nil != err)
 		{
@@ -67,8 +69,8 @@ extern int _CTServerConnectionSetVibratorState(int *, void *, int, float, float,
 			exit(1);
 		}
 
-//		path = [[NSBundle mainBundle] pathForResource:@"ApolloSend" ofType:@"wav" inDirectory:@"/"];
-		path = [[NSBundle mainBundle] pathForResource:@"ApolloSend" ofType:@"aiff" inDirectory:@"/"];		
+		path = [NSString stringWithFormat: @"%@/ApolloSend.wav", PATH_MEDIA];
+//		path = [[NSBundle mainBundle] pathForResource:@"ApolloSend" ofType:@"aiff" inDirectory:@"/"];		
 		sendIm = [[AVItem alloc] initWithPath:path error:&err];
 		if (nil != err)
 		{
@@ -76,7 +78,7 @@ extern int _CTServerConnectionSetVibratorState(int *, void *, int, float, float,
 			exit(1);
 		}
 
-/*		path = [[NSBundle mainBundle] pathForResource:@"ApolloSignOn" ofType:@"wav" inDirectory:@"/"];
+		path = [NSString stringWithFormat: @"%@/ApolloSignOn.wav", PATH_MEDIA];
 		signOn = [[AVItem alloc] initWithPath:path error:&err];
 		if (nil != err)
 		{
@@ -84,7 +86,7 @@ extern int _CTServerConnectionSetVibratorState(int *, void *, int, float, float,
 			exit(1);
 		}
 		
-		path = [[NSBundle mainBundle] pathForResource:@"ApolloSignOff" ofType:@"wav" inDirectory:@"/"];
+		path = [NSString stringWithFormat: @"%@/ApolloSignOff.wav", PATH_MEDIA];
 		signOff = [[AVItem alloc] initWithPath:path error:&err];
 		if (nil != err)
 		{
@@ -92,6 +94,7 @@ extern int _CTServerConnectionSetVibratorState(int *, void *, int, float, float,
 			exit(1);
 		}
 
+/*
 		path = [[NSBundle mainBundle] pathForResource:@"ApolloGoAway" ofType:@"wav" inDirectory:@"/"];
 		goAway = [[AVItem alloc] initWithPath:path error:&err];
 		if (nil != err)
@@ -122,14 +125,14 @@ extern int _CTServerConnectionSetVibratorState(int *, void *, int, float, float,
 			exit(1);
 		}
 
-/*		[q appendItem:sendIm error:&err];
+		[q appendItem:sendIm error:&err];
 		if (nil != err)
 		{
 			NSLog(@"err! = %@ \n [q appendItem:item error:&err];", err);
 			exit(1);
-		}*/
+		}
 		
-/*		[q appendItem:signOn error:&err];
+		[q appendItem:signOn error:&err];
 		if (nil != err)
 		{
 			NSLog(@"err! = %@ \n [q appendItem:item error:&err];", err);
@@ -143,6 +146,7 @@ extern int _CTServerConnectionSetVibratorState(int *, void *, int, float, float,
 			exit(1);
 		}
 		
+/*
 		[q appendItem:goAway error:&err];
 		if (nil != err)
 		{
@@ -271,22 +275,22 @@ int callback(void *connection, CFStringRef string, CFDictionaryRef dictionary, v
 
 -(void)playSignOff
 {
-	[self play:signOff];
+	[self play:signOff withVibrating:false];
 }
 
 -(void)playSignon
 {
-	[self play:signOn];
+	[self play:signOn withVibrating:false];
 }
 
 -(void)playSendIm
 {
-	[self play:sendIm];	
+	[self play:sendIm withVibrating:false];	
 }
 
 -(void)playRecvIm
 {
-	[self play:recvIm];
+	[self play:recvIm withVibrating:true];
 }
 
 -(void)receiveUnreadMessages:(int)msgCount  //should just do playRecvIm
@@ -336,15 +340,15 @@ int callback(void *connection, CFStringRef string, CFDictionaryRef dictionary, v
 
 -(void)playGoAway
 {
-	[self play:goAway];
+	[self play:goAway withVibrating:true];
 }
 
 -(void)playComeBack
 {
-	[self play:comeBack];
+	[self play:comeBack withVibrating:true];
 }
 
--(void)play:(AVItem *)item
+-(void)play:(AVItem *)item withVibrating:(bool)vibr
 {
 
   //Slyv - this is from original Apollo, but it causes iphone freezes when many "plays" in short time
@@ -368,7 +372,7 @@ int callback(void *connection, CFStringRef string, CFDictionaryRef dictionary, v
 			//exit(1);
 		//}
 	}
-	[self vibrateForDuration];
+	if (vibr) [self vibrateForDuration];
 }
 
 -(void)soundThread:(AVItem *)item
