@@ -64,6 +64,7 @@
 
 - (BOOL) removeHTML:(NSMutableString *) from
 {
+	/*
 	int del = 0;
 	int i = 0;
 	for(i; i< ([from length]); i++)
@@ -91,7 +92,7 @@
 			i--;
 		}
 	}
-
+	*/
 	// Replace the odd characters
 	[from replaceOccurrencesOfString:@"&apos;" withString:@"'" options:NSCaseInsensitiveSearch range:NSMakeRange(0, [from length])];
 	[from replaceOccurrencesOfString:@"&lt;" withString:@"<" options:NSCaseInsensitiveSearch range:NSMakeRange(0, [from length])];

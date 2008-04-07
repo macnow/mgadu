@@ -289,12 +289,19 @@ static id sharedInstanceViewControl;
 
 -(void) showNewMessageFrom:(NSString*)dude withMessage:(NSString*)groovy
 {
-		UIAlertSheet* sheet = [[UIAlertSheet alloc]initWithTitle:dude buttons:nil defaultButtonIndex:1 delegate:self context:nil];
-        [sheet setBodyText:[self removeHTML:[[NSMutableString alloc]initWithString:groovy]]];
+	NSMutableString * m_groovy = [NSMutableString stringWithString:groovy];
+	UIAlertSheet* sheet = [[UIAlertSheet alloc]initWithTitle:dude buttons:nil defaultButtonIndex:1 delegate:self context:nil];
+        [m_groovy replaceOccurrencesOfString:@"&apos;" withString:@"'" options:NSCaseInsensitiveSearch range:NSMakeRange(0, [m_groovy length])];
+        [m_groovy replaceOccurrencesOfString:@"&lt;" withString:@"<" options:NSCaseInsensitiveSearch range:NSMakeRange(0, [m_groovy length])];
+        [m_groovy replaceOccurrencesOfString:@"&gt;" withString:@">" options:NSCaseInsensitiveSearch range:NSMakeRange(0, [m_groovy length])];
+        [m_groovy replaceOccurrencesOfString:@"&amp;" withString:@"&" options:NSCaseInsensitiveSearch range:NSMakeRange(0, [m_groovy length])];
+        [m_groovy replaceOccurrencesOfString:@"&quot;" withString:@"\"" options:NSCaseInsensitiveSearch range:NSMakeRange(0, [m_groovy length])];
+        //[sheet setBodyText:[self removeHTML:[[NSMutableString alloc]initWithString:groovy]]];
+        [sheet setBodyText:m_groovy];
         [sheet addButtonWithTitle:@"OK"];
-		[sheet setAlertSheetStyle:0];
-		[sheet setShowsOverSpringBoardAlerts:YES];
-		[sheet popupAlertAnimated:NO];
+	[sheet setAlertSheetStyle:0];
+	[sheet setShowsOverSpringBoardAlerts:YES];
+	[sheet popupAlertAnimated:NO];
 }
 
 -(void) showError:(NSString *) error
